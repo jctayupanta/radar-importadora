@@ -333,8 +333,16 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Escribe el nombre. Ejemplo: "Mundial de fútbol".</li>
  <li>Elige cuándo empieza y cuándo termina la venta.</li>
  <li>Marca <b>"Se repite cada año"</b> si es anual. Desmárcalo si es de una sola vez.</li>
+ <li>En <b>Qué buscar</b> escribe una categoría por línea con sus palabras separadas por comas. Ejemplo: <span class="kbd">Lectura: atril para libros, lámpara de lectura, separadores magnéticos</span>.</li>
  <li>Pulsa <b>Agregar al calendario</b>. Se calculan solas las fechas para pedir, de salida y de llegada.</li>
 </ol>
+<h3>Qué busca el radar en cada temporada</h3>
+<p>En la tabla de temporadas, la columna <b>Qué buscar</b> muestra cuántas palabras tiene cada una (por ejemplo "78 palabras · 12 ✓"). Púlsala para ver la lista completa por categorías. Con <b>Editar lista</b> agregas o quitas palabras: una categoría por línea, <span class="kbd">Categoría: palabra, palabra, palabra</span>, y <b>Guardar lista</b>.</p>
+<ul>
+ <li>Las listas de las temporadas que vienen con la app salen de una investigación de mercado de Ecuador, Colombia y México (octubre 2026). Están en el proyecto IMPORTADORA como <span class="kbd">temporadas-palabras.md</span>, con sus fuentes.</li>
+ <li><b>✓ probada</b> = con esa palabra el radar encontró en Dropkiller productos que vendieron en esa temporada el año pasado. Pasa el mouse para ver cuántas unidades y en qué país.</li>
+ <li>La lista es el <b>mínimo</b>: el radar también busca productos parecidos que aparezcan vendiendo fuerte y los agrega en la categoría <b>"Encontradas por el radar"</b> (máximo 3 por categoría). Nunca borra palabras que pusiste tú.</li>
+</ul>
 <div class="note">Las temporadas se repiten solas cada año. El Día de la Madre (2.º domingo de mayo), el Día del Padre (3.er domingo de junio) y Black Friday se recalculan cada año.</div>
 </section>
 
@@ -380,6 +388,14 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <h3>Calidad del último análisis (Inicio)</h3>
 <p>Después de cada análisis, Inicio muestra cuántos productos se revisaron, cuántos quedaron sin datos, qué fuentes fallaron y qué datos corrigió el validador.</p>
 <h3>Radar de temporada</h3>
+<div class="tablewrap"><table><thead><tr><th>Escribes en la terminal</th><th>Qué hace</th></tr></thead><tbody>
+<tr><td><span class="kbd">/radar-temporada</span></td><td style="white-space:normal">Revisa todas las temporadas del Calendario a las que todavía llega la próxima carga (con 21 días de venta).</td></tr>
+<tr><td><span class="kbd">/radar-temporada Época fit</span></td><td style="white-space:normal">Solo esa temporada. El nombre va como aparece en el Calendario; da igual mayúsculas o tildes.</td></tr>
+<tr><td><span class="kbd">/radar-temporada San Valentín</span></td><td style="white-space:normal">Igual, para San Valentín. Si la carga ya no llega, igual marca qué palabras están probadas y te avisa que sirve para el año siguiente.</td></tr>
+<tr><td><span class="kbd">/radar-temporada Mundial</span> (no existe)</td><td style="white-space:normal">Te dice que primero la agregues en el Calendario con su lista de "Qué buscar".</td></tr>
+</tbody></table></div>
+<p><b>Cómo trabaja:</b> 1) busca en Dropkiller cada palabra de la lista de esa temporada; 2) si aparecen productos parecidos vendiendo fuerte, los busca también; 3) mira el historial del año pasado solo de los 2 o 3 más vendidos de cada categoría; 4) marca las palabras probadas ✓ en el Calendario y guarda los productos con su curva en el Semáforo (filtro "Temporada").</p>
+<p><b>Temporadas que trae la app:</b> Época fit / Año nuevo (1 ene – 15 mar), Carnaval (cambia cada año; 2027: 20 ene – 9 feb), San Valentín (25 ene – 14 feb), Regreso a clases Costa (15 mar – 5 may), Día de la Madre, Día del Niño (10 may – 1 jun), Día del Padre, Regreso a clases Sierra (15 ago – 10 sep), Black Friday, Navidad (15 nov – 24 dic) y Año Viejo (20 – 31 dic).</p>
 <p>Con el comando <span class="kbd">/radar-temporada</span> el radar busca productos que vendieron fuerte la <b>temporada pasada</b> (Navidad, Día de la Madre, etc.) y arma su curva con el historial de Dropkiller: cuándo empezó, cuándo fue el pico, cuánto bajó el precio y cuánto vendió en total. Con lo que vendió el vendedor más débil sugiere un <b>techo</b> de cajas y te dice si la próxima carga llega antes de que empiece la ola. Si no llega con 21 días de venta, sale como "No pedir".</p>
 <p>Límites: Dropkiller no guarda cuántos proveedores había cada semana (solo el número de hoy) y la curva empieza desde que Dropkiller sigue ese producto.</p>
 </section>
@@ -570,7 +586,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <div class="tablewrap"><table><thead><tr><th>Comando</th><th>Qué hace</th><th>Cuándo usarlo</th></tr></thead><tbody>
 <tr><td><span class="kbd">/radar</span></td><td style="white-space:normal">Estudio grande: revisa el top de Dropkiller en Colombia, Ecuador y México, filtra y analiza a fondo los 10 mejores. Los guarda en la app.</td><td style="white-space:normal">Cuando quieras buscar productos nuevos (por ejemplo, una vez por semana).</td></tr>
 <tr><td><span class="kbd">/analizar</span> + link, foto o nombre</td><td style="white-space:normal">Analiza un solo producto al momento.</td><td style="white-space:normal">Cuando viste algo y quieres el veredicto ya, sin pasar por la app.</td></tr>
-<tr><td><span class="kbd">/radar-temporada</span></td><td style="white-space:normal">Busca productos que vendieron fuerte la temporada pasada y arma su curva (inicio, pico, precio y cajas sugeridas).</td><td style="white-space:normal">Al menos 2 meses y medio antes de cada temporada: es lo que tarda una carga en estar lista para vender.</td></tr>
+<tr><td><span class="kbd">/radar-temporada</span> o <span class="kbd">/radar-temporada Época fit</span></td><td style="white-space:normal">Busca, con la lista "Qué buscar" de cada temporada del Calendario, productos que vendieron fuerte la temporada pasada y arma su curva (inicio, pico, precio y cajas sugeridas). Sin nombre revisa todas las alcanzables; con nombre, solo esa.</td><td style="white-space:normal">Al menos 2 meses y medio antes de cada temporada: es lo que tarda una carga en estar lista para vender.</td></tr>
 <tr><td><span class="kbd">/analizar-cola</span></td><td style="white-space:normal">Analiza todo lo propuesto en la app que esté en cola.</td><td style="white-space:normal">Si no quieres esperar a las 8 pm.</td></tr>
 <tr><td><span class="kbd">/mcp</span></td><td style="white-space:normal">Muestra si Dropkiller está conectado. Si dice "needs authentication": Authenticate → copiar el enlace a Incogniton → Allow.</td><td style="white-space:normal">Si un análisis falla con Dropkiller.</td></tr>
 <tr><td><span class="kbd">/login</span></td><td style="white-space:normal">Vuelve a iniciar tu sesión de Claude, en tu Chrome normal y nunca en Incogniton.</td><td style="white-space:normal">Si aparece el error 401 o "Please run /login".</td></tr>

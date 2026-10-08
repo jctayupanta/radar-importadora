@@ -394,7 +394,15 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <tr><td><span class="kbd">/radar-temporada San Valentín</span></td><td style="white-space:normal">Igual, para San Valentín. Si la carga ya no llega, igual marca qué palabras están probadas y te avisa que sirve para el año siguiente.</td></tr>
 <tr><td><span class="kbd">/radar-temporada Mundial</span> (no existe)</td><td style="white-space:normal">Te dice que primero la agregues en el Calendario con su lista de "Qué buscar".</td></tr>
 </tbody></table></div>
-<p><b>Cómo trabaja:</b> 1) busca en Dropkiller cada palabra de la lista de esa temporada; 2) si aparecen productos parecidos vendiendo fuerte, los busca también; 3) mira el historial del año pasado solo de los 2 o 3 más vendidos de cada categoría; 4) marca las palabras probadas ✓ en el Calendario y guarda los productos con su curva en el Semáforo (filtro "Temporada").</p>
+<p><b>Cómo trabaja (modo exhaustivo):</b> como mira el año pasado, el resultado no cambia de un día a otro, así que se corre <b>una vez por temporada</b>, antes de pedir, y revisa todo:</p>
+<ol>
+ <li>Busca en Dropkiller cada palabra de la lista de esa temporada, en Colombia, Ecuador y México.</li>
+ <li>Si aparecen productos parecidos vendiendo fuerte, los busca también (hasta 3 palabras nuevas por categoría).</li>
+ <li>Mira el historial del año pasado de <b>todos</b> los productos encontrados que ya existían en esa época.</li>
+ <li><b>Regla de pertenencia:</b> un producto es de la temporada solo si su <b>semana de más ventas cae dentro de las fechas</b> de la temporada. Si no, va a la lista "Vende en otra época" con su mes más fuerte. Ejemplo: una libreta de ahorro que vende casi todo en diciembre es de Navidad, no de Época fit.</li>
+ <li>Guarda en el Semáforo (filtro "Temporada") <b>todos</b> los que pertenecen, sin tope, con su curva. Marca con ✓ en el Calendario las palabras que dieron productos que pertenecen.</li>
+ <li>Deja un informe completo en la carpeta <span class="kbd">logs</span> (temporada-…md) con la tabla de todos los productos, los que venden en otra época y qué categorías no tuvieron ventas.</li>
+</ol>
 <p><b>Temporadas que trae la app:</b> Época fit / Año nuevo (1 ene – 15 mar), Carnaval (cambia cada año; 2027: 20 ene – 9 feb), San Valentín (25 ene – 14 feb), Regreso a clases Costa (15 mar – 5 may), Día de la Madre, Día del Niño (10 may – 1 jun), Día del Padre, Regreso a clases Sierra (15 ago – 10 sep), Black Friday, Navidad (15 nov – 24 dic) y Año Viejo (20 – 31 dic).</p>
 <p>Con el comando <span class="kbd">/radar-temporada</span> el radar busca productos que vendieron fuerte la <b>temporada pasada</b> (Navidad, Día de la Madre, etc.) y arma su curva con el historial de Dropkiller: cuándo empezó, cuándo fue el pico, cuánto bajó el precio y cuánto vendió en total. Con lo que vendió el vendedor más débil sugiere un <b>techo</b> de cajas y te dice si la próxima carga llega antes de que empiece la ola. Si no llega con 21 días de venta, sale como "No pedir".</p>
 <p>Límites: Dropkiller no guarda cuántos proveedores había cada semana (solo el número de hoy) y la curva empieza desde que Dropkiller sigue ese producto.</p>
@@ -546,6 +554,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Solo temporadas del Calendario que la próxima carga alcanza con 21 días de venta.</li>
  <li>Solo productos que Dropkiller ya seguía antes de la temporada del año pasado.</li>
  <li>Mira desde <b>45 días antes</b> del inicio hasta <b>15 días después</b> del fin de la temporada pasada, con hasta <b>5 publicaciones</b> del mismo producto por país.</li>
+ <li><b>Pertenece</b> solo si la semana de más ventas cae dentro de las fechas de la temporada; si no, se informa aparte como "vende en otra época". La ficha muestra las unidades vendidas <b>dentro</b> de la temporada y su % del periodo revisado.</li>
  <li><b>Inicio</b> = día en que se llegó al 10% de las ventas de ese periodo. <b>Pico</b> = la semana con más ventas. <b>Fin</b> = día del 90%.</li>
  <li><b>Caída de precio</b>: precio de la primera semana contra el más bajo después del pico, con su fecha.</li>
  <li><b>¿Se repite?</b>: si vendió dos temporadas seguidas, sale "vendió 2 años seguidos".</li>

@@ -9,7 +9,7 @@
   --bg:#eef1f4; --surface:#ffffff; --ink:#14212e; --muted:#5b6b7a; --line:#d5dde5;
   --accent:#1f5f99; --accent-ink:#ffffff; --chip:#e3eaf1;
   --verde:#1e8a4c; --amarillo:#c98a06; --rojo:#c23b2e; --gris:#8a96a3;
-  --verde-bg:#e3f4ea; --amarillo-bg:#fbf1d9; --rojo-bg:#f8e3e0; --gris-bg:#eceff2;
+  --verde-bg:#e3f4ea; --amarillo-bg:#fbf1d9; --rojo-bg:#f8e3e0; --gris-bg:#eceff2; --morado:#7a4fb3; --morado-bg:#efe7f8;
   --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -18,12 +18,12 @@
   --bg:#0f161d; --surface:#17212b; --ink:#e4ebf1; --muted:#93a3b2; --line:#2a3846;
   --accent:#5a9bd8; --accent-ink:#0b1219; --chip:#22303d;
   --verde:#3fbf74; --amarillo:#e6ad2e; --rojo:#ea6a5c; --gris:#8a96a3;
-  --verde-bg:#16301f; --amarillo-bg:#33290f; --rojo-bg:#3a1c19; --gris-bg:#222c35; color-scheme:dark}}
+  --verde-bg:#16301f; --amarillo-bg:#33290f; --rojo-bg:#3a1c19; --gris-bg:#222c35; --morado:#b48ee6; --morado-bg:#2b2238; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f161d; --surface:#17212b; --ink:#e4ebf1; --muted:#93a3b2; --line:#2a3846;
   --accent:#5a9bd8; --accent-ink:#0b1219; --chip:#22303d;
   --verde:#3fbf74; --amarillo:#e6ad2e; --rojo:#ea6a5c; --gris:#8a96a3;
-  --verde-bg:#16301f; --amarillo-bg:#33290f; --rojo-bg:#3a1c19; --gris-bg:#222c35; color-scheme:dark}
+  --verde-bg:#16301f; --amarillo-bg:#33290f; --rojo-bg:#3a1c19; --gris-bg:#222c35; --morado:#b48ee6; --morado-bg:#2b2238; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:16px 48px}
@@ -116,6 +116,19 @@ details.help summary{cursor:pointer;font-weight:600}
 details.help dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 12px;margin:10px 0 0}
 details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+
+.morado{color:var(--morado);background:var(--morado-bg)}.tag.perm{background:var(--morado-bg);color:var(--morado)}.tag.etq{background:var(--chip);color:var(--ink)}
+.concl{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:14px 16px;margin:14px 0;background:var(--surface)}
+.concl h3{margin:0 0 6px;font-family:var(--display);font-size:19px}.concl dl{display:grid;grid-template-columns:minmax(110px,auto) 1fr;gap:6px 14px;margin:8px 0 0}.concl dt{font-weight:600}.concl dd{margin:0}
+.concl ul{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--muted)}
+.permbox{border:1px solid var(--morado);background:var(--morado-bg);border-radius:8px;padding:12px 14px;margin:14px 0}.permbox b{color:var(--morado)}
+.permbox .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.compact{display:grid;grid-template-columns:1fr;gap:0}.compact .ci{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.compact .ci:last-child{border-bottom:0}
+.compact .ci .nm{font-weight:600}.compact .ci .why{color:var(--muted);font-size:13px;flex:1;min-width:200px}
+details.fold{margin-top:14px}details.fold summary{cursor:pointer;font-family:var(--display);font-size:19px}
+.sosp{color:var(--amarillo);font-weight:600}
+.tchart{width:100%;height:auto;display:block}.tchart text{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.qrep .kv span:nth-child(odd){color:var(--muted)}
 </style>
 <style>.decision{border-radius:10px;padding:14px 16px;margin:14px 0;border:2px solid var(--line);background:var(--surface)}
 .decision.verde{border-color:var(--verde);background:var(--verde-bg)}.decision.amarillo{border-color:var(--amarillo);background:var(--amarillo-bg)}.decision.rojo{border-color:var(--rojo);background:var(--rojo-bg)}.decision.gris{background:var(--gris-bg)}
@@ -155,7 +168,7 @@ const PZ_MAX = { escalera: 25, saturacion: 20, videos: 15, ganancia: 15, etapa: 
 const PZ_TXT = { escalera: "Escalera de países", saturacion: "Saturación Ecuador", videos: "Videos", ganancia: "Ganancia", etapa: "Etapa y durabilidad", utilidad: "Utilidad y valor", rotacion: "Rotación" };
 const CL = ["#1f5f99", "#b0417a", "#2f8f83", "#8a5cc2", "#c0602b", "#4f7d2a", "#9a6b12", "#3b6fb6", "#7d4f9e"];
 
-let P = [], PROP = [], CARGAS = [], TEMP = [], RAW_T = [];
+let P = [], PROP = [], CARGAS = [], TEMP = [], RAW_T = [], REPORTES = [];
 // Temporadas que se repiten cada año. tipo "fijo": mismas fechas cada año. tipo "regla": la fecha final cae en un día de la semana (ej. 2do domingo de mayo).
 const DEFAULT_TEMP = [
   { id: "navidad", nombre: "Navidad", tipo: "fijo", inicio: "12-01", fin: "12-24" },
@@ -227,11 +240,39 @@ function vals(p) {
 // ===== Evaluación en la app: recalcula ganancia y semáforo con el costo (estimado o cotizado) =====
 const PAISES = [["CO", "Colombia"], ["EC", "Ecuador"], ["MX", "México"]];
 function perdida() { const e = cfg.entrega; return e > 0 ? cfg.envio * (1 - e) / e : 0; }
+// Permiso pendiente (formato nuevo datos.permiso o productos viejos marcados "Permisos")
+function permiso(p) {
+  const d = p.datos || {};
+  if (d.permiso && d.permiso.requiere) return d.permiso.resuelto ? null : d.permiso;
+  if (d.motivo_tipo === "Permisos" || (d.requiereRegistro && d.requiereRegistro.valor)) return { requiere: true, tipo: null, motivo: (d.requiereRegistro && d.requiereRegistro.motivo) || p.motivo || "", resuelto: false };
+  return null;
+}
+const enColaPermiso = p => PROP.some(x => x.estado === "en_cola" && x.producto_id === p.id && x.propuesto_por === "Permiso resuelto");
+// Dónde se muestra: "normal" (tarjeta), "compacto" (sin datos / fuera de temporada / descartado por ti), "archivado"
+function tipoLista(p) {
+  const d = p.datos || {};
+  if (p.estado === "descartado") return "compacto";
+  if (d.archivado) return "archivado";
+  if (d.descarte && d.descarte.tipo) return "compacto";
+  if (p.semaforo === "rojo" && p.puntaje == null && !Object.values(d.puntaje || {}).some(x => typeof x === "number")) return "compacto";
+  return "normal";
+}
+function porQueCompacto(p) {
+  const d = p.datos || {};
+  if (p.estado === "descartado") return "Lo descartaste tú" + (p.nota ? ": " + p.nota : ".");
+  if (d.descarte) return `${d.descarte.tipo}: ${d.descarte.texto || ""}`;
+  return (d.motivo_tipo ? d.motivo_tipo + ": " : "") + (p.motivo || "Sin datos para juzgarlo.");
+}
 function evaluar(p) {
-  const d = p.datos || {}, v = vals(p);
-  if ((p.semaforo || "gris") === "gris") return { sem: "gris", pts: null, decision: "En análisis", pasos: ["Se analiza a las 8 pm o con /analizar-cola."], costoMax: null, elim: [], pz: v.pz };
+  const d = p.datos || {}, v = vals(p); const perm = permiso(p);
+  if (tipoLista(p) === "compacto" && p.estado !== "descartado") return { sem: "gris", pts: null, decision: "Sin analizar a fondo", pasos: [porQueCompacto(p), "Si crees que vale la pena, pulsa Reanalizar."], costoMax: null, elim: [], pz: v.pz, perm, compacto: true };
+  if ((p.semaforo || "gris") === "gris") return { sem: "gris", pts: null, decision: "En análisis", pasos: ["Se analiza a las 8 pm o con /analizar-cola."], costoMax: null, elim: [], pz: v.pz, perm };
   const pz = { ...v.pz }; const elim = [];
-  if (p.semaforo === "rojo" && ["Permisos", "Llega tarde"].includes(d.motivo_tipo)) elim.push(d.motivo_tipo === "Permisos" ? "Necesita registro sanitario" : "Llega tarde a su temporada");
+  if (p.semaforo === "rojo" && d.motivo_tipo === "Llega tarde") elim.push("Llega tarde a su temporada");
+  const tea = d.temporada ? ["CO", "EC"].map(k => d.temporada[k]?.este_anio).filter(Boolean)[0] : null;
+  if (tea && tea.suficientes_dias === false) elim.push(`Llega tarde a ${d.temporada.nombre || "la temporada"}: solo ${tea.dias_de_venta_hasta_fin} días de venta (mínimo 21)`);
+  if (p.semaforo === "rojo" && d.motivo_tipo === "Saturado") elim.push("Saturado en Ecuador (con números de proveedores y anuncios)");
+  if (p.semaforo === "rojo" && d.motivo_tipo === "Sin demanda") elim.push("Sin demanda en Colombia ni Ecuador");
   const pp = d.precio_proveedor_usd ?? null; let cpaMax = null, margen = null;
   if (v.costo != null && v.precio != null) {
     cpaMax = v.precio - v.costo - cfg.envio - perdida(); const r = cpaMax / cfg.cpa;
@@ -251,7 +292,9 @@ function evaluar(p) {
   else if (v.costo == null) { decision = "Cotizar primero"; pasos = ["Cotiza en Imporfactory (calculadora o asesor) el costo puesto por unidad, con piezas por caja y CBM.", costoMax != null ? `Si el costo puesto sale en ${money(costoMax)} o menos, vale la pena.` : "Falta el precio de venta para calcular el costo máximo.", "Escribe la cotización abajo en \"Tu cotización\" y pulsa Guardar: el semáforo se recalcula."]; }
   else if (sem === "amarillo") { decision = "Testear 1 caja"; pasos = ["Pide solo 1 caja en la próxima carga para probar.", "Prueba anuncios en Meta y mide el CPA real.", "Si el CPA real queda por debajo del CPA máximo, pasa a Aprobado y pide más."]; }
   else { decision = "Pedir"; pasos = ["Agrégalo en el Armador de carga.", "Pide antes de la fecha límite: " + (v.pedir || fmtCorto(proximaSalida().pedir)) + ".", "Prepara los creativos mientras llega."]; }
-  return { sem, pts, decision, pasos, costoMax, elim, pz, cpaMax, margen };
+  if (tea && tea.suficientes_dias !== false && tea.llega_antes_del_inicio === false && sem !== "rojo") pasos.push(`Ojo: la carga llega el ${fmtCorto(iso(tea.lista_para_vender))} y la ola arrancó ~${fmtCorto(iso(tea.inicio_esperado))} el año pasado: llegas después del inicio.`);
+  if (perm && sem !== "rojo") { decision = "Confirmar permiso"; pasos = [`Confirma con el curso o el agente si de verdad necesita ${perm.tipo || "permiso"} y si se puede traer en el barco grupal.`, "Mientras tanto puedes cotizarlo igual (abajo, en Tu cotización).", "Si sí puedes traerlo, pulsa \"Sí puedo traerlo\": se hace el análisis completo esa noche. Si no, pulsa \"Descartar\"."]; }
+  return { sem, pts, decision, pasos, costoMax, elim, pz, cpaMax, margen, perm };
 }
 
 async function cargar() {
@@ -267,7 +310,7 @@ async function cargar() {
     P = a.data; PROP = b.data; CARGAS = c.data;
     const conf = Object.fromEntries(d.data.map(r => [r.clave, r.valor]));
     if (conf.supuestos) cfg = { ...cfg, ...conf.supuestos };
-    RAW_T = conf.temporadas;
+    RAW_T = conf.temporadas; REPORTES = Array.isArray(conf.reporte_calidad) ? conf.reporte_calidad : [];
     if (!Array.isArray(RAW_T) || RAW_T.some(t => !t.tipo)) { RAW_T = DEFAULT_TEMP; await db.from("config").update({ valor: RAW_T }).eq("clave", "temporadas"); }
     TEMP = expandir(RAW_T);
   } catch (e) { errorMsg = "No se pudieron cargar los datos: " + (e.message || e); }
@@ -282,20 +325,40 @@ function thumb(p) { return p.foto_url ? `<img class="thumb" src="${esc(p.foto_ur
 function card(p) {
   const v = vals(p), ev = evaluar(p), sem = ev.sem;
   return `<button class="card" data-f="${p.id}"><div class="stripe s-${sem}"></div><div class="in">
-  <div class="row">${thumb(p)}<div style="flex:1;min-width:0"><div class="name">${esc(p.nombre)}</div><div class="ex">${esc(p.nicho || "")} · ${p.origen === "propuesta" ? "Propuesto" : "Radar"}</div></div><div class="score">${ev.pts ?? "—"}</div></div>
-  <div><span class="pill ${sem}">${S[sem]}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : v.costoReal ? "REAL" : "ESTIMADO"}</span> <span class="tag dec">${esc(ev.decision)}</span></div>
+  <div class="row">${thumb(p)}<div style="flex:1;min-width:0"><div class="name">${esc(p.nombre)}</div><div class="ex">${esc(p.nicho || "")} · ${origenTxt(p)}${p.datos?.revision ? " · revisión " + (p.datos.revision === "completa" ? "completa" : "rápida") : ""}</div></div><div class="score">${ev.pts ?? "—"}</div></div>
+  <div><span class="pill ${sem}">${S[sem]}</span> ${ev.perm ? '<span class="tag perm">REQUIERE PERMISO</span> ' : ""}<span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : v.costoReal ? "REAL" : "ESTIMADO"}</span> <span class="tag dec">${esc(ev.decision)}</span>${etqTag(p)}</div>
   <div style="font-size:13px">${esc(p.motivo || "")}</div>
   <div class="kv"><span>Inversión 1 caja</span><span>${v.costo && v.piezas ? money(v.costo * v.piezas) : "—"}</span><span>Pedir hasta</span><span>${esc(v.pedir || "—")}</span><span>Lista para vender</span><span>${esc(v.lista || "—")}</span></div></div></button>`;
+}
+const origenTxt = p => p.origen === "propuesta" ? "Propuesto" : p.origen === "temporada" ? "Temporada" + (p.datos?.temporada?.nombre ? ": " + p.datos.temporada.nombre : "") : "Radar";
+const etqTag = p => { const e = p.datos?.conclusion?.etiqueta; return e && !(e === "Requiere permiso" && permiso(p)) ? ` <span class="tag etq">${esc(e)}</span>` : ""; };
+const compactoRow = p => `<div class="ci">${permiso(p) ? '<span class="tag perm">PERMISO</span>' : ""}<button class="mlink nm" data-f="${p.id}">${esc(p.nombre)}</button><span class="why">${esc(porQueCompacto(p))}</span></div>`;
+function reporteHTML() {
+  const r = REPORTES[0]; if (!r) return "";
+  const n = (o) => o ? Object.values(o).reduce((a, x) => a + (Array.isArray(x) ? x.length : 0), 0) : 0;
+  const tipo = { radar: "/radar", cola: "propuestas (8 pm)", temporada: "/radar-temporada" }[r.tipo] || r.tipo;
+  return `<h2 style="font-size:19px">Calidad del último análisis</h2><div class="panel qrep"><p class="sub" style="margin:0 0 8px">${esc(tipo)} · ${fmt(new Date(r.fecha))}</p>
+  <div class="kv"><span>Candidatos</span><span>${r.candidatos ?? "—"}</span><span>Guardados</span><span>${r.guardados} (${r.completas} completos, ${r.rapidas} rápidos)</span><span>Semáforos</span><span>${r.semaforos.verde} verdes · ${r.semaforos.amarillo} amarillos · ${r.semaforos.rojo} rojos · ${r.semaforos.gris} sin datos</span><span>Con permiso</span><span>${r.con_permiso}</span><span>Filtrados antes de buscar</span><span>${n(r.filtrados)}${r.filtrados?.temporada?.length ? " · " + r.filtrados.temporada.length + " fuera de temporada" : ""}</span>${r.archivados?.length ? `<span>Archivados</span><span>${r.archivados.length}</span>` : ""}</div>
+  ${r.fuentes_fallidas?.length ? `<p class="warn" style="margin-top:10px">Fuentes que fallaron: ${r.fuentes_fallidas.map(esc).join(" · ")}</p>` : ""}
+  ${r.faltas_frecuentes?.length ? `<p class="sub" style="margin:8px 0 0;font-size:13px">Lo que más faltó: ${r.faltas_frecuentes.map(([k, v]) => `${esc(k)} (${v})`).join(" · ")}</p>` : ""}
+  ${r.avisos?.length ? `<details class="help"><summary>Datos corregidos por el validador (${r.avisos.length} productos)</summary><ul style="margin:8px 0 0;padding-left:18px">${r.avisos.map(a => `<li><b>${esc(a.nombre)}:</b> ${a.avisos.map(esc).join("; ")}</li>`).join("")}</ul></details>` : ""}</div>`;
 }
 const vacio = (t) => `<div class="panel"><p class="sub" style="margin:0">${t}</p></div>`;
 
 const V = {
   inicio() {
-    const c = k => P.filter(p => evaluar(p).sem === k).length;
+    const N = P.filter(p => tipoLista(p) === "normal");
+    const c = k => N.filter(p => evaluar(p).sem === k).length;
     const cola = PROP.filter(x => x.estado === "en_cola").length;
+    const perm = N.filter(p => evaluar(p).perm).length;
     const al = P.flatMap(p => vals(p).alertas.map(a => ({ p, a })));
+    const lim = new Date(HOY); lim.setDate(lim.getDate() + 7);
+    const rev = N.map(p => ({ p, f: iso(p.datos?.conclusion?.revisar) })).filter(x => x.f && x.f <= lim).sort((a, b) => a.f - b.f);
     return `<h2>Resumen</h2><p class="sub">Lo que hay hoy y lo que tienes que decidir.</p>
-    <div class="stats">${["verde", "amarillo", "rojo"].map(k => `<div class="stat"><div class="n" style="color:var(--${k})">${c(k)}</div><div class="l">${S[k]}</div></div>`).join("")}<div class="stat"><div class="n">${cola}</div><div class="l">En cola (8 pm)</div></div></div>
+    <div class="stats">${["verde", "amarillo", "rojo"].map(k => `<div class="stat"><div class="n" style="color:var(--${k})">${c(k)}</div><div class="l">${S[k]}</div></div>`).join("")}<div class="stat"><div class="n" style="color:var(--morado)">${perm}</div><div class="l">Requiere permiso</div></div><div class="stat"><div class="n">${cola}</div><div class="l">En cola (8 pm)</div></div></div>
+    <h2 style="font-size:19px">Revisar esta semana</h2>
+    ${rev.length ? `<div class="panel compact">${rev.map(({ p, f }) => `<div class="ci"><span class="pill ${evaluar(p).sem}">${S[evaluar(p).sem]}</span><button class="mlink nm" data-f="${p.id}">${esc(p.nombre)}</button><span class="why">${f < HOY ? "Vencido: " : ""}${fmtCorto(f)} · ${esc(p.datos.conclusion.revisar_motivo || "")}</span></div>`).join("")}</div>` : vacio("Nada que revisar en los próximos 7 días.")}
+    ${reporteHTML()}
     <h2 style="font-size:19px">Alertas de seguimiento</h2>
     ${al.length ? al.map(({ p, a }) => `<div class="alert"><span class="pill ${a.tipo === "sube" ? "verde" : "rojo"}">${a.tipo === "sube" ? "Sube" : "Se satura"}</span><div><b>${esc(p.nombre)}</b>: ${esc(a.texto)}</div></div>`).join("") : vacio("Todavía no hay alertas. Aparecen cuando el radar compara una semana con la anterior.")}`;
   },
@@ -311,15 +374,20 @@ const V = {
      <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => `<div class="alert"><span class="pill gris">Cola</span><div><b>${esc(x.link || "Foto")}</b><br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))}</span></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}</div></div>`;
   },
   semaforo() {
-    const l = P.filter(p => filtro === "todos" || evaluar(p).sem === filtro);
+    const N = P.filter(p => tipoLista(p) === "normal"), C = P.filter(p => tipoLista(p) === "compacto"), A = P.filter(p => tipoLista(p) === "archivado");
+    const pasa = (p, k = filtro) => k === "todos" || (k === "permiso" ? !!evaluar(p).perm : k === "temporada" ? p.origen === "temporada" : evaluar(p).sem === k);
+    const l = N.filter(p => pasa(p));
+    const FL = [["todos", "Todos"], ["verde", "Verde"], ["amarillo", "Amarillo"], ["rojo", "Rojo"], ["permiso", "Requiere permiso"], ["temporada", "Temporada"], ["gris", "En análisis"]];
     return `<h2>Semáforo</h2><p class="sub">Toca un producto para ver su ficha completa y la calculadora.</p>
-    <div class="filters">${["todos", "verde", "amarillo", "rojo", "gris"].map(k => `<button class="chipbtn" aria-pressed="${filtro === k}" data-fl="${k}">${k === "todos" ? "Todos" : S[k]}</button>`).join("")}</div>
-    ${l.length ? `<div class="grid">${l.map(card).join("")}</div>` : vacio("Aún no hay productos aquí. Propón uno en la pestaña Proponer o corre /radar en la terminal.")}`;
+    <div class="filters">${FL.map(([k, t]) => `<button class="chipbtn" aria-pressed="${filtro === k}" data-fl="${k}">${t} <span class="ex">${N.filter(p => pasa(p, k)).length}</span></button>`).join("")}</div>
+    ${l.length ? `<div class="grid">${l.map(card).join("")}</div>` : vacio("Aún no hay productos aquí. Propón uno en la pestaña Proponer o corre /radar en la terminal.")}
+    ${C.length ? `<h2 style="font-size:19px;margin-top:20px">Descartes rápidos <span class="ex">${C.length}</span></h2><p class="sub" style="font-size:13px">No llegaron a ficha: sin datos suficientes, fuera de temporada o descartados por ti. Toca el nombre para verlo o reanalizarlo.</p><div class="panel compact">${C.map(compactoRow).join("")}</div>` : ""}
+    ${A.length ? `<details class="fold"><summary>Archivados <span class="ex">${A.length}</span></summary><p class="sub" style="font-size:13px">Llevan ${4} semanas en seguimiento sin mejorar. Si cambian, el radar los saca solo.</p><div class="panel compact">${A.map(p => `<div class="ci"><button class="mlink nm" data-f="${p.id}">${esc(p.nombre)}</button><span class="why">${esc(p.datos.archivado.motivo || "")} · desde ${fmtCorto(iso(p.datos.archivado.fecha))}</span></div>`).join("")}</div></details>` : ""}`;
   },
   armador() {
     let tot = 0, cbm = 0; const warn = [];
-    const rows = P.filter(p => ["verde", "amarillo"].includes(evaluar(p).sem)).map(p => { const v = vals(p); const c = cajas[p.id] ?? 0; const inv = v.costo && v.piezas ? c * v.piezas * v.costo : 0; tot += inv; cbm += c * (v.cbm || 0); return { p, v, c, inv }; });
-    rows.forEach(r => { if (r.inv > cfg.capital * cfg.tope) warn.push(`${r.p.nombre}: supera el ${Math.round(cfg.tope * 100)}% del capital`); if (!r.v.costo && r.c) warn.push(`${r.p.nombre}: falta el costo, cotízalo`); });
+    const rows = P.filter(p => tipoLista(p) === "normal" && ["verde", "amarillo"].includes(evaluar(p).sem)).map(p => { const v = vals(p); const c = cajas[p.id] ?? 0; const inv = v.costo && v.piezas ? c * v.piezas * v.costo : 0; tot += inv; cbm += c * (v.cbm || 0); return { p, v, c, inv }; });
+    rows.forEach(r => { if (r.inv > cfg.capital * cfg.tope) warn.push(`${r.p.nombre}: supera el ${Math.round(cfg.tope * 100)}% del capital`); if (!r.v.costo && r.c) warn.push(`${r.p.nombre}: falta el costo, cotízalo`); if (r.c && permiso(r.p)) warn.push(`${r.p.nombre}: requiere permiso, confírmalo antes de pedir`); });
     if (tot > cfg.capital) warn.push("Te pasas del capital disponible");
     const ps = proximaSalida(); const pct = Math.min(100, tot / cfg.capital * 100);
     return `<h2>Armador de carga</h2><p class="sub">Elige cuántas cajas de cada producto en verde o amarillo. Máximo ${Math.round(cfg.tope * 100)}% del capital en un solo producto.</p>
@@ -363,8 +431,8 @@ const V = {
     return `<h2>Historial</h2><p class="sub">Todo lo propuesto y analizado. Nada se borra.</p><div class="panel"><input id="buscar" placeholder="Buscar producto…" style="margin-bottom:10px"><div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Propuso</th><th>Semáforo</th><th>Motivo</th></tr></thead><tbody id="hbody">${rows.map(r => `<tr><td>${fmtCorto(r.f)}</td><td>${esc(r.n)}</td><td>${esc(r.q || "—")}</td><td><span class="pill ${r.sem}">${S[r.sem]}</span></td><td style="white-space:normal;min-width:240px">${esc(r.m || "")}</td></tr>`).join("")}</tbody></table></div></div>`;
   },
   inversores() {
-    const desc = P.filter(p => evaluar(p).sem === "rojo");
-    const motivos = {}; desc.forEach(p => { const k = p.datos?.motivo_tipo || "Otro"; motivos[k] = (motivos[k] || 0) + 1; });
+    const desc = P.filter(p => evaluar(p).sem === "rojo" || tipoLista(p) !== "normal");
+    const motivos = {}; desc.forEach(p => { const k = p.estado === "descartado" ? "Descartado por el equipo" : tipoLista(p) === "archivado" ? "Archivado (no mejoró)" : p.datos?.descarte?.tipo || p.datos?.motivo_tipo || "Otro"; motivos[k] = (motivos[k] || 0) + 1; });
     const maxM = Math.max(1, ...Object.values(motivos));
     const c = CARGAS[0]; let esc3 = null;
     if (c) {
@@ -394,12 +462,42 @@ function escaleraHTML(p) {
   const cols = [...PAISES.map(([k, n]) => [n, det[k] || {}]), ...((det.otros || []).map(o => [o.pais || "Otro", o]))];
   const row = (lab, f) => `<tr><th scope="row">${lab}</th>${cols.map(([, c]) => `<td class="num">${f(c)}</td>`).join("")}</tr>`;
   return `<div class="tablewrap"><table class="esc"><thead><tr><th></th>${cols.map(([n]) => `<th>${esc(n)}</th>`).join("")}</tr></thead><tbody>
-   ${row("Ventas 7 días", c => num(c.ventas7))}${row("Ventas 30 días", c => num(c.ventas30))}${row("Proveedores", c => num(c.proveedores))}${row("Precio proveedor", c => c.precio_usd != null ? money(c.precio_usd) : "—")}${row("Anuncios activos", c => num(c.anuncios))}
-   <tr><th scope="row">Lectura</th>${cols.map(([, c]) => { const l = LECT[c.lectura]; return `<td>${l ? `<span class="pill ${l[0]}">${l[1]}</span>` : '<span class="ex">sin datos</span>'}</td>`; }).join("")}</tr>
-  </tbody></table></div>${cols.some(([, c]) => c.nota) ? `<ul class="sub" style="font-size:13px;margin:8px 0 0;padding-left:18px">${cols.filter(([, c]) => c.nota).map(([n, c]) => `<li><b>${esc(n)}:</b> ${esc(c.nota)}</li>`).join("")}</ul>` : ""}${links}`;
+   ${row("Ventas 7 días", c => num(c.ventas7) + (c.sospechoso ? ' <span class="sosp" title="Dato sospechoso: revisar">⚠</span>' : ""))}${row("Ventas 30 días", c => num(c.ventas30) + (c.sospechoso ? ' <span class="sosp" title="Dato sospechoso: revisar">⚠</span>' : ""))}${row("Proveedores", c => num(c.proveedores))}${row("Precio proveedor", c => c.precio_usd != null ? money(c.precio_usd) : "—")}${row("Anuncios activos", c => num(c.anuncios))}
+   <tr><th scope="row">Lectura</th>${cols.map(([, c]) => { const l = LECT[c.lectura]; return `<td>${l ? `<span class="pill ${l[0]}">${l[1]}</span>${c.lectura_criterio ? '<div class="ex">a criterio</div>' : ""}` : '<span class="ex">sin datos</span>'}</td>`; }).join("")}</tr>
+  </tbody></table></div>${cols.some(([, c]) => c.sospechoso) ? '<p class="sub" style="font-size:12px;margin:6px 0 0"><span class="sosp">⚠</span> Dato sospechoso (por ejemplo, ventas de 7 y 30 días iguales): tómalo con pinzas.</p>' : ""}${cols.some(([, c]) => c.lectura_criterio) ? '<p class="sub" style="font-size:12px;margin:4px 0 0">"A criterio": todavía hay pocos productos analizados para comparar; cuando haya más, la lectura se calcula sola.</p>' : '<p class="sub" style="font-size:12px;margin:4px 0 0">Libre / intermedio / saturado = cómo está la competencia (proveedores y anuncios) comparada con los demás productos analizados en las últimas 8 semanas.</p>'}${cols.some(([, c]) => c.nota) ? `<ul class="sub" style="font-size:13px;margin:8px 0 0;padding-left:18px">${cols.filter(([, c]) => c.nota).map(([n, c]) => `<li><b>${esc(n)}:</b> ${esc(c.nota)}</li>`).join("")}</ul>` : ""}${links}`;
+}
+function permisoHTML(p, ev) {
+  if (!ev.perm) return "";
+  const pr = ev.perm;
+  if (enColaPermiso(p)) return `<div class="permbox"><b>Requiere permiso → marcaste "Sí puedo traerlo".</b> Queda en cola para el análisis completo de las 8 pm.</div>`;
+  return `<div class="permbox"><b>Requiere permiso${pr.tipo ? ": " + esc(pr.tipo) : ""}</b><p style="margin:6px 0 0">${esc(pr.motivo || "El radar cree que este tipo de producto necesita un permiso para importarse y venderse en Ecuador.")}</p><p class="sub" style="margin:6px 0 0;font-size:13px">Es la lectura del radar y puede estar equivocada: confírmalo con el curso o el agente. No se descarta: el semáforo se calcula igual y puedes cotizarlo.</p>
+  <div class="acts"><button class="btn" data-permok="${p.id}">Sí puedo traerlo</button><button class="btn ghost" data-permno="${p.id}">Descartar</button></div></div>`;
+}
+function conclusionHTML(p) {
+  const d = p.datos || {}, c = d.conclusion || {}, fr = d.lecturas?.frases || [];
+  if (!c.etiqueta && !c.momento && !fr.length) return `<div class="concl"><h3>Análisis y conclusión</h3><p class="sub" style="margin:0">Este producto se analizó con el formato anterior. Pulsa Reanalizar para tener la conclusión completa.</p></div>`;
+  const rv = iso(c.revisar);
+  return `<div class="concl"><h3>Análisis y conclusión ${c.etiqueta ? `<span class="tag etq" style="font-size:12px">${esc(c.etiqueta)}</span>` : '<span class="tag">sin etiqueta: faltan números</span>'}</h3>
+  <dl>${c.momento ? `<dt>Momento</dt><dd>${esc(c.momento)}</dd>` : ""}${c.lectura ? `<dt>Lectura</dt><dd>${esc(c.lectura)}</dd>` : ""}${c.riesgo ? `<dt>Riesgo</dt><dd>${esc(c.riesgo)}</dd>` : ""}${rv ? `<dt>Próxima revisión</dt><dd><b>${fmt(rv)}</b>${c.revisar_motivo ? " · " + esc(c.revisar_motivo) : ""}</dd>` : ""}</dl>
+  ${fr.length ? `<ul>${fr.map(x => `<li>${esc(x)}</li>`).join("")}</ul><p class="ex" style="margin:6px 0 0">Números calculados el ${fmtCorto(iso(d.lecturas.fecha))} comparando con datos reales, sin umbrales inventados.</p>` : ""}</div>`;
+}
+function temporadaHTML(p) {
+  const t = p.datos?.temporada; if (!t) return "";
+  const bloques = ["CO", "EC"].filter(k => t[k]).map(k => {
+    const c = t[k], sem = c.semanal || [], max = Math.max(1, ...sem.map(x => x.unidades || 0));
+    const W = 600, H = 150, bw = sem.length ? W / sem.length : W;
+    const bars = sem.map((x, i) => { const h = Math.round((x.unidades || 0) / max * (H - 24)); const pico = c.pico && x.semana <= c.pico && (sem[i + 1] ? sem[i + 1].semana > c.pico : true); return `<rect x="${(i * bw + 2).toFixed(1)}" y="${H - 16 - h}" width="${Math.max(2, bw - 4).toFixed(1)}" height="${h}" rx="2" fill="${pico ? "var(--accent)" : "var(--gris)"}"><title>${x.semana}: ${x.unidades} unidades${x.precio != null ? " · $" + x.precio : ""}</title></rect>`; }).join("");
+    const lbl = sem.filter((_, i) => i % Math.ceil(sem.length / 6 || 1) === 0).map(x => { const i = sem.indexOf(x); return `<text x="${(i * bw + 2).toFixed(1)}" y="${H - 2}">${fmtCorto(iso(x.semana))}</text>`; }).join("");
+    const e = c.este_anio || {};
+    return `<div><h3 style="font-family:var(--display);font-size:17px;margin:10px 0 4px">${k === "CO" ? "Colombia" : "Ecuador"} · temporada ${esc(t.anio_ref || "")}</h3>
+    <svg class="tchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ventas por semana en la temporada pasada">${bars}${lbl}</svg>
+    <div class="kv"><span>Empezó (10% de las ventas)</span><span>${fmtCorto(iso(c.inicio))}</span><span>Pico</span><span>${fmtCorto(iso(c.pico))}</span><span>Terminó (90%)</span><span>${fmtCorto(iso(c.fin))}</span><span>Unidades en total</span><span>${num(c.unidades_total)}</span><span>Precio</span><span>${c.precio_inicio_usd != null ? money(c.precio_inicio_usd) + " → " + money(c.precio_min_usd) + (c.caida_pct ? ` (−${c.caida_pct}% el ${fmtCorto(iso(c.caida_fecha))})` : " (no bajó)") : "—"}</span><span>Vendedor más débil</span><span>${num(c.mas_debil_unidades)} unidades${c.cajas_sugeridas ? " → hasta " + c.cajas_sugeridas + " cajas" : ""}</span><span>Este año</span><span>${e.inicio_esperado ? `Arranca ~${fmtCorto(iso(e.inicio_esperado))}; la carga llega el ${fmtCorto(iso(e.lista_para_vender))} ${e.llega_antes_del_inicio ? '<span class="pill verde">a tiempo</span>' : '<span class="pill rojo">tarde para el inicio</span>'}` : "—"}${e.dias_de_venta_hasta_fin != null ? ` · ${e.dias_de_venta_hasta_fin} días de venta` : ""}</span></div></div>`;
+  }).join("");
+  return `<div class="panel" style="margin:14px 0"><h2 style="font-size:19px">Temporada pasada${t.nombre ? ": " + esc(t.nombre) : ""} ${t.repetido === true ? '<span class="tag real">vendió 2 años seguidos</span>' : t.repetido === false ? '<span class="tag est">solo 1 año de datos</span>' : ""}</h2>
+  <p class="sub" style="font-size:13px;margin:0">Ventas por semana del año pasado (historial de Dropkiller). La barra azul es el pico. Las cajas sugeridas son un techo: lo que vendió el vendedor más débil.</p>${bloques}</div>`;
 }
 function decisionHTML(p, ev) {
-  const v = vals(p); const cls = { "Pedir": "verde", "Testear 1 caja": "amarillo", "Cotizar primero": "amarillo", "No pedir": "rojo", "En análisis": "gris" }[ev.decision];
+  const v = vals(p); const cls = { "Pedir": "verde", "Testear 1 caja": "amarillo", "Cotizar primero": "amarillo", "No pedir": "rojo", "En análisis": "gris", "Sin analizar a fondo": "gris", "Confirmar permiso": "morado" }[ev.decision];
   const cambio = v.costoReal && (p.semaforo || "gris") !== ev.sem ? `<p style="margin:8px 0 0"><b>Con tu costo cotizado de ${money(v.costo)}</b> el producto pasó de ${S[p.semaforo]} a <span class="pill ${ev.sem}">${S[ev.sem]}</span>.</p>` : v.costoReal ? `<p style="margin:8px 0 0">Calculado con tu costo cotizado de <b>${money(v.costo)}</b>.</p>` : "";
   return `<div class="decision ${cls}"><div class="row" style="flex-wrap:wrap;align-items:flex-start"><div><div class="ex">¿Qué hago con este producto?</div><div class="dtit">${esc(ev.decision)}</div></div>${ev.costoMax != null ? `<div class="cmax"><div class="ex">Costo puesto máximo</div><b>${money(ev.costoMax)}</b><div class="ex">por unidad para que valga la pena</div></div>` : ""}</div>
    <ol class="dpasos">${ev.pasos.map(x => `<li>${esc(x)}</li>`).join("")}</ol>${cambio}</div>`;
@@ -407,10 +505,13 @@ function decisionHTML(p, ev) {
 function fichaV(p) {
   const v = vals(p), ev = evaluar(p), sem = ev.sem; const t = Object.entries(ev.pz);
   return `<button class="back" data-back="1">← Volver al semáforo</button>
-  <div class="row" style="flex-wrap:wrap"><div><h2>${esc(p.nombre)}</h2><span class="pill ${sem}">${S[sem]}</span> <span class="tag">${esc(p.nicho || "")}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : "Costo " + (v.costoReal ? "REAL" : "ESTIMADO")}</span> ${p.confianza ? `<span class="tag">Confianza ${esc(p.confianza)}</span>` : ""}</div><div style="text-align:right"><div class="score" style="font-size:52px">${ev.pts ?? "—"}</div><div class="ex">Analizado ${fmtCorto(new Date(p.actualizado || p.creado))}</div><button class="chipbtn" data-rean="${p.id}" style="margin-top:6px">Reanalizar</button></div></div>
+  <div class="row" style="flex-wrap:wrap"><div><h2>${esc(p.nombre)}</h2><span class="pill ${sem}">${S[sem]}</span>${ev.perm ? ' <span class="tag perm">REQUIERE PERMISO</span>' : ""}${etqTag(p)} <span class="tag">${esc(p.nicho || "")}</span> <span class="tag">${esc(origenTxt(p))}${p.datos?.revision ? " · " + (p.datos.revision === "completa" ? "revisión completa" : "revisión rápida") : ""}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : "Costo " + (v.costoReal ? "REAL" : "ESTIMADO")}</span> ${p.confianza ? `<span class="tag">Confianza ${esc(p.confianza)}</span>` : ""}</div><div style="text-align:right"><div class="score" style="font-size:52px">${ev.pts ?? "—"}</div><div class="ex">Analizado ${fmtCorto(new Date(p.actualizado || p.creado))}</div><button class="chipbtn" data-rean="${p.id}" style="margin-top:6px">Reanalizar</button></div></div>
   <p style="max-width:65ch">${esc(p.motivo || "")}</p>
   <div id="rmsg" class="sub" style="margin:0"></div>
+  ${permisoHTML(p, ev)}
   ${decisionHTML(p, ev)}
+  ${conclusionHTML(p)}
+  ${temporadaHTML(p)}
   <div class="panel" style="margin:14px 0"><h2 style="font-size:19px">Escalera de países</h2><p class="sub" style="font-size:13px;margin:0 0 8px">Lo ideal: ventas fuertes en Colombia y Ecuador todavía libre. Todo en dólares.</p>${escaleraHTML(p)}</div>
   <div class="two"><div class="panel">
    ${t.length ? `<h2 style="font-size:19px">Puntaje</h2><div class="dist">${t.map(([k, x]) => { const m = PZ_MAX[k] || 10; return x == null ? `<div class="score-bar"><span>${PZ_TXT[k] || esc(k)}</span><div class="bar"></div><span class="num ex">sin dato</span></div>` : `<div class="score-bar"><span>${PZ_TXT[k] || esc(k)}</span><div class="bar"><i style="width:${Math.min(100, x / m * 100)}%"></i></div><span class="num">${x}/${m}</span></div>`; }).join("")}</div><p class="sub" style="font-size:12px;margin:8px 0 0">Los criterios sin dato no cuentan: el puntaje se calcula solo con lo que se sabe. La ganancia se recalcula con el costo actual.</p>` : ""}
@@ -460,7 +561,9 @@ function render() {
 const msg = (id, t, bad) => { const el = document.getElementById(id); if (el) { el.textContent = t; el.style.color = bad ? "var(--rojo)" : "var(--verde)"; } };
 
 document.getElementById("view").onclick = async e => {
-  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean]"); if (!t) return; const d = t.dataset;
+  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean],[data-permok],[data-permno]"); if (!t) return; const d = t.dataset;
+  if (d.permok) { const p = P.find(x => x.id === d.permok); t.disabled = true; const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Permiso resuelto", comentario: "Sí puedo traerlo: " + p.nombre, producto_id: p.id }); if (r.error) { t.disabled = false; return msg("rmsg", "No se pudo: " + r.error.message, true); } msg("rmsg", "Listo: se hace el análisis completo a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
+  if (d.permno) { const p = P.find(x => x.id === d.permno); const r = await db.from("productos").update({ estado: "descartado", nota: p.nota || "Descartado: requiere permiso", actualizado: new Date().toISOString() }).eq("id", p.id); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Descartado. Queda en Descartes rápidos por si cambias de opinión."); return setTimeout(cargar, 700); }
   if (d.recargar) return cargar();
   if (d.rean) { const p = P.find(x => x.id === d.rean); const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Reanálisis", comentario: "Reanalizar: " + p.nombre, producto_id: p.id }); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Listo: quedó en cola para reanalizar a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
   if (d.cm) { calMes = new Date(calMes.getFullYear(), calMes.getMonth() + +d.cm, 1); return render(); }

@@ -156,6 +156,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 .faq details{border-bottom:1px solid var(--line);padding:10px 0}
 .faq summary{cursor:pointer;font-weight:600}
 .faq p{margin:8px 0 0;color:var(--muted)}
+.mlay>*{min-width:0}
 @media (max-width:760px){.mlay{grid-template-columns:1fr}.toc{position:static;max-height:none}.sim .sl{grid-template-columns:1fr 48px}.sim .sl span:first-child{grid-column:1/-1}}
 </style>
 
@@ -183,7 +184,8 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
   <a href="#inversores">Inversores</a>
   <a href="#ajustes">Ajustes</a>
   <div class="grp">Cómo decide</div>
-  <a href="#reglas">Reglas del semáforo</a>
+  <a href="#novedades">Novedades de octubre</a>
+  <a href="#reglas">Reglas completas</a>
   <a href="#simulador">Simulador</a>
   <div class="grp">Operación</div>
   <a href="#rutina">Rutina de Juank</a>
@@ -354,32 +356,200 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <div class="note warn">Cualquier persona con el link puede cambiar los ajustes. Compártelo solo con los inversores.</div>
 </section>
 
-<section class="msec" id="reglas"><h2>Reglas del semáforo</h2>
-<h3>1. Eliminatorios: si falla uno, es rojo</h3>
-<ul>
- <li><b>Permisos</b>: suplementos, maquillaje, cosméticos, alimentos o dispositivos médicos necesitan registro sanitario en Ecuador.</li>
- <li><b>Llega tarde</b>: no alcanza 21 días de venta dentro de su temporada. Se indica la próxima temporada.</li>
- <li><b>Margen bajo</b>: menos de 30% como proveedor.</li>
- <li><b>No da en venta directa</b>: el precio no cubre costo, envío, pedidos no entregados y publicidad.</li>
-</ul>
-<h3>2. Puntaje de 0 a 100</h3>
-<div class="tablewrap"><table><thead><tr><th>Criterio</th><th>Puntos</th><th>Qué mide</th></tr></thead><tbody>
- <tr><td>Escalera de países</td><td class="num">25</td><td style="white-space:normal">Fuerte en Colombia y poco presente en Ecuador; si va subiendo.</td></tr>
- <tr><td>Saturación Ecuador</td><td class="num">20</td><td style="white-space:normal">Proveedores en Dropi, stock y anuncios activos. Menos saturado, más puntos.</td></tr>
- <tr><td>Videos</td><td class="num">15</td><td style="white-space:normal">Videos con más de 10 mil vistas en cualquier idioma, sobre todo recientes.</td></tr>
- <tr><td>Ganancia</td><td class="num">15</td><td style="white-space:normal">Margen como proveedor y CPA máximo en venta directa.</td></tr>
- <tr><td>Etapa y durabilidad</td><td class="num">10</td><td style="white-space:normal">Pico inicial mejor que maduro; demanda estable mejor que moda pasajera.</td></tr>
- <tr><td>Utilidad y valor</td><td class="num">10</td><td style="white-space:normal">Resuelve un problema o deseo y parece valer más de lo que cuesta.</td></tr>
- <tr><td>Rotación</td><td class="num">5</td><td style="white-space:normal">Cuánto tarda en venderse la caja mínima.</td></tr>
-</tbody></table></div>
-<div class="note">Si un producto no está en Dropkiller ni en Imporfactory, no es rojo por eso: puede ser un océano azul. Se evalúa por videos y anuncios en otros países, y lo máximo que saca es amarillo.</div>
+<section class="msec" id="novedades"><h2>Novedades de octubre</h2>
+<h3>Productos que requieren permiso</h3>
+<p>Cosméticos, suplementos, alimentos, dispositivos médicos y parecidos ya <b>no salen en rojo</b>. Llevan la etiqueta morada <b>REQUIERE PERMISO</b>, el semáforo se calcula normal y puedes cotizarlos. En la ficha hay dos botones:</p>
+<ul><li><b>Sí puedo traerlo</b>: si conseguiste el permiso o el radar se equivocó. Se quita la etiqueta y esa noche se hace el análisis completo.</li><li><b>Descartar</b>: lo manda a Descartes rápidos.</li></ul>
+<p>El permiso que indica el radar es su lectura: confírmalo siempre con el curso o el agente.</p>
+<h3>Análisis y conclusión</h3>
+<p>Cada ficha trae una caja con una etiqueta y cuatro líneas: <b>momento</b> (en qué punto está el producto), <b>lectura</b> (qué dicen los números), <b>riesgo</b> y <b>próxima revisión</b>. Las etiquetas son:</p>
+<div class="tablewrap"><table><thead><tr><th>Etiqueta</th><th>Qué significa</th></tr></thead><tbody>
+<tr><td>Probado</td><td style="white-space:normal">Ya se vende de forma sostenida en Colombia y/o Ecuador.</td></tr>
+<tr><td>Ola en crecimiento</td><td style="white-space:normal">La última semana vendió más que el promedio del mes, o subió desde el radar anterior.</td></tr>
+<tr><td>Océano azul con riesgo</td><td style="white-space:normal">Hay demanda afuera y en Ecuador casi no existe. Nadie lo probó aquí todavía.</td></tr>
+<tr><td>Saturado con evidencia</td><td style="white-space:normal">Muchos proveedores o anuncios en Ecuador, con números.</td></tr>
+<tr><td>Fuera de temporada</td><td style="white-space:normal">No llega a tiempo a su temporada.</td></tr>
+<tr><td>Requiere permiso</td><td style="white-space:normal">Falta confirmar el permiso.</td></tr></tbody></table></div>
+<p>Si una etiqueta no tiene números que la respalden, el validador la quita.</p>
+<h3>Sin umbrales inventados</h3>
+<p>"Libre, intermedio o saturado" ya no es una opinión: se calcula comparando los proveedores y anuncios del producto con los de todos los productos analizados en las últimas 8 semanas (el tercio con menos competencia es libre; el del medio, intermedio; el de más, saturado). Mientras haya pocos productos para comparar, la lectura sale marcada <b>"a criterio"</b>. Los datos raros (por ejemplo, ventas de 7 y 30 días iguales) salen con <b>⚠</b>.</p>
+<h3>Revisión rápida y completa</h3>
+<p><b>Rápida</b>: solo Dropkiller y el catálogo de Imporfactory, sin abrir el navegador. <b>Completa</b>: además TikTok, anuncios y Google Trends. El radar hace completa a los mejores, máximo 10 por semana. Lo que tú o los inversores proponen siempre lleva completa.</p>
+<h3>Descartes rápidos y archivados</h3>
+<p>Lo que no tiene datos suficientes o está fuera de temporada ya no llena el semáforo de fichas rojas vacías: aparece en una lista corta al final de Semáforo. Lo que lleva 4 semanas sin mejorar pasa a <b>Archivados</b>.</p>
+<h3>Calidad del último análisis (Inicio)</h3>
+<p>Después de cada análisis, Inicio muestra cuántos productos se revisaron, cuántos quedaron sin datos, qué fuentes fallaron y qué datos corrigió el validador.</p>
+<h3>Radar de temporada</h3>
+<p>Con el comando <span class="kbd">/radar-temporada</span> el radar busca productos que vendieron fuerte la <b>temporada pasada</b> (Navidad, Día de la Madre, etc.) y arma su curva con el historial de Dropkiller: cuándo empezó, cuándo fue el pico, cuánto bajó el precio y cuánto vendió en total. Con lo que vendió el vendedor más débil sugiere un <b>techo</b> de cajas y te dice si la próxima carga llega antes de que empiece la ola. Si no llega con 21 días de venta, sale como "No pedir".</p>
+<p>Límites: Dropkiller no guarda cuántos proveedores había cada semana (solo el número de hoy) y la curva empieza desde que Dropkiller sigue ese producto.</p>
 </section>
+
+<section class="msec" id="reglas"><h2>Reglas completas: cómo decide el radar</h2>
+<p>Todo lo que sigue está escrito en el archivo de reglas (<span class="kbd">config.json</span>) y lo aplica el código, no una opinión del momento. Si algo se cambia, se cambia ahí.</p>
+
+<h3>1. El recorrido de un producto</h3>
+<ol>
+ <li><b>Entra</b> por una de tres puertas: el <b>radar</b> (/radar busca solo en Dropkiller), una <b>propuesta</b> tuya o de un inversor desde la app, o el <b>radar de temporada</b> (/radar-temporada).</li>
+ <li><b>Filtros antes de buscar</b> (para no gastar): si es de temporada y la próxima carga no llega con 21 días de venta, se anota como <i>Fuera de temporada</i> y no se busca. Si necesita permiso, se marca y en el radar solo lleva revisión rápida.</li>
+ <li><b>Búsqueda de datos</b>: revisión rápida o completa (ver punto 9).</li>
+ <li><b>Validador</b>: antes de guardar, un programa revisa los números, marca los sospechosos, calcula las lecturas, el puntaje, el semáforo y la confianza, y quita conclusiones sin respaldo.</li>
+ <li><b>La app</b> vuelve a calcular la ganancia y el semáforo cada vez que cambias un supuesto o pones tu cotización.</li>
+</ol>
+
+<h3>2. Fechas: cuándo llega una carga</h3>
+<ul>
+ <li>Las cargas salen el <b>1 y el 15</b> de cada mes.</li>
+ <li>Hay que pedir <b>3 días antes</b> de la salida. Si faltan menos de 3 días, va en la siguiente.</li>
+ <li>La mercadería está <b>lista para vender 60 días después</b> de la salida.</li>
+ <li>Un producto de temporada necesita <b>al menos 21 días de venta</b> antes de que termine su temporada. Si no, es <i>Llega tarde</i> / <i>Fuera de temporada</i>.</li>
+</ul>
+
+<h3>3. Los datos que se buscan</h3>
+<div class="tablewrap"><table><thead><tr><th>Dato</th><th>De dónde sale</th><th>Para qué sirve</th></tr></thead><tbody>
+ <tr><td>Ventas 7 y 30 días por país</td><td style="white-space:normal">Dropkiller (conector), Colombia, Ecuador, México y otros</td><td style="white-space:normal">Escalera de países, ritmo de venta, tendencia</td></tr>
+ <tr><td>Proveedores por país</td><td style="white-space:normal">Dropkiller: cuántas publicaciones distintas hay hoy</td><td style="white-space:normal">Competencia (saturación)</td></tr>
+ <tr><td>Anuncios activos</td><td style="white-space:normal">Dropkiller (anuncios) o Biblioteca de anuncios de Meta</td><td style="white-space:normal">Competencia (saturación)</td></tr>
+ <tr><td>Precio proveedor</td><td style="white-space:normal">Dropkiller, mediana del precio de venta a dropshippers en Ecuador (o Colombia si no hay)</td><td style="white-space:normal">Margen como proveedor</td></tr>
+ <tr><td>Precio al cliente</td><td style="white-space:normal">Anuncios en Ecuador; si no hay, precio sugerido convertido</td><td style="white-space:normal">CPA máximo en venta directa</td></tr>
+ <tr><td>Costo puesto por unidad</td><td style="white-space:normal">Catálogo de Imporfactory; si no está, tu cotización</td><td style="white-space:normal">Ganancia y margen</td></tr>
+ <tr><td>Videos</td><td style="white-space:normal">TikTok: videos con 10.000 o más "me gusta", por antigüedad (últimos 30 días, 31 a 90, más viejos)</td><td style="white-space:normal">Si el producto tiene tracción orgánica</td></tr>
+ <tr><td>Google Trends</td><td style="white-space:normal">Solo si parece estacional, Ecuador, 5 años</td><td style="white-space:normal">Confirmar temporada</td></tr>
+ <tr><td>Historial diario</td><td style="white-space:normal">Dropkiller, solo en /radar-temporada</td><td style="white-space:normal">Curva de la temporada pasada</td></tr>
+</tbody></table></div>
+<p>Todo se guarda en dólares (pesos colombianos y mexicanos se convierten con la tasa de Ajustes del archivo de reglas). Un dato que no se encontró queda <b>vacío</b>, nunca en 0: 0 quiere decir "confirmado en cero".</p>
+
+<h3>4. Datos sospechosos (⚠)</h3>
+<ul>
+ <li>Ventas de 7 días <b>mayores</b> que las de 30 días: imposible, se marca y se anota en "Falta".</li>
+ <li>Ventas de 7 y 30 días <b>iguales</b>: o todo se vendió esta semana, o el dato está mal. Se marca para revisar.</li>
+ <li>Números que vienen como texto se convierten o se dejan vacíos. Precios de más de $300 se marcan por si quedaron en moneda local.</li>
+ <li>Un dato sospechoso no deja que la confianza sea alta.</li>
+</ul>
+
+<h3>5. El puntaje (0 a 100)</h3>
+<div class="tablewrap"><table><thead><tr><th>Criterio</th><th>Máx.</th><th>Cómo se da</th><th>Quién lo pone</th></tr></thead><tbody>
+ <tr><td>Escalera de países</td><td class="num">25</td><td style="white-space:normal">Más puntos si vende fuerte en Colombia (el mercado más maduro) y poco o nada en Ecuador, y si va subiendo.</td><td style="white-space:normal">Criterio del radar con los números de ventas</td></tr>
+ <tr><td>Saturación Ecuador</td><td class="num">20</td><td style="white-space:normal">20 × (1 − percentil de competencia en Ecuador). Ejemplo: si tiene más proveedores y anuncios que el 85% de los productos analizados, saca 3. Si hay menos de 10 productos para comparar, queda "a criterio" (solo si hay algún número de Ecuador) o vacío.</td><td style="white-space:normal">Calculado</td></tr>
+ <tr><td>Videos</td><td class="num">15</td><td style="white-space:normal">Videos de 10.000+ "me gusta"; los recientes pesan más.</td><td style="white-space:normal">Criterio del radar con el conteo</td></tr>
+ <tr><td>Ganancia</td><td class="num">15</td><td style="white-space:normal">CPA máximo ÷ CPA de referencia: 3 o más = 15; 2 o más = 12; 1,5 o más = 9; 1 o más = 6; menos = 0.</td><td style="white-space:normal">Calculado en la app</td></tr>
+ <tr><td>Etapa y durabilidad</td><td class="num">10</td><td style="white-space:normal">Pico inicial (1 a 3 meses) o crecimiento suman más que maduro o en declive; demanda estable más que moda pasajera.</td><td style="white-space:normal">Criterio del radar</td></tr>
+ <tr><td>Utilidad y valor</td><td class="num">10</td><td style="white-space:normal">Resuelve un problema o deseo claro y parece valer más de lo que cuesta.</td><td style="white-space:normal">Criterio del radar</td></tr>
+ <tr><td>Rotación</td><td class="num">5</td><td style="white-space:normal">Qué tan rápido se vendería la caja mínima según las ventas actuales.</td><td style="white-space:normal">Criterio del radar</td></tr>
+</tbody></table></div>
+<p><b>Criterio sin dato = no cuenta.</b> El puntaje se calcula solo con lo que se sabe: 100 × (puntos obtenidos) ÷ (puntos máximos de los criterios con dato). Ejemplo: escalera 18/25, videos 10/15 y utilidad 7/10 → 35 de 50 posibles → <b>70</b>. Menos datos no sube el puntaje: baja la confianza.</p>
+
+<h3>6. La ganancia, paso a paso</h3>
+<ul>
+ <li><b>Pérdida por no entregados</b> = envío × (1 − % entrega) ÷ % entrega. Con envío $7 y 75% de entrega: $7 × 0,25 ÷ 0,75 = <b>$2,33</b> por pedido entregado.</li>
+ <li><b>CPA máximo</b> = precio al cliente − costo puesto − envío − pérdida. Es lo más que puedes pagar en anuncios por venta sin perder.</li>
+ <li><b>Ganancia por pedido</b> = CPA máximo − CPA de referencia ($4 por defecto, se cambia en Ajustes).</li>
+ <li><b>Margen como proveedor</b> = (precio proveedor − costo) ÷ precio proveedor. Mínimo 30%.</li>
+ <li><b>Costo puesto máximo</b> (lo que muestra la ficha) = el menor entre (precio al cliente − envío − pérdida − CPA de referencia) y (precio proveedor × 0,7). Si cotizas por debajo de ese número, vale la pena.</li>
+</ul>
+
+<h3>7. El color del semáforo</h3>
+<div class="tablewrap"><table><thead><tr><th>Color</th><th>Cuándo</th></tr></thead><tbody>
+ <tr><td><span class="pill verde">Verde</span></td><td style="white-space:normal">Puntaje de <b>70 o más</b>, sin eliminatorios <b>y con costo</b> (estimado o cotizado).</td></tr>
+ <tr><td><span class="pill amarillo">Amarillo</span></td><td style="white-space:normal">Puntaje de <b>50 a 69</b>, o puntaje de 70+ <b>sin costo</b> (sin costo nunca pasa de amarillo).</td></tr>
+ <tr><td><span class="pill rojo">Rojo</span></td><td style="white-space:normal">Falla un <b>eliminatorio con números</b>, o el puntaje es <b>menor a 50 calculado con datos reales</b>. Nunca es rojo por falta de datos.</td></tr>
+ <tr><td><span class="pill gris">Sin datos / gris</span></td><td style="white-space:normal">Menos de la mitad del puntaje posible tiene dato real (sin contar ganancia): no se juzga, va a <b>Descartes rápidos</b> y se vuelve a mirar en el próximo radar. También es gris lo que está en cola.</td></tr>
+</tbody></table></div>
+<p><b>Eliminatorios</b> (cualquiera pone rojo):</p>
+<ul>
+ <li><b>No da en venta directa</b>: el CPA máximo es menor al CPA de referencia.</li>
+ <li><b>Margen bajo</b>: menos de 30% como proveedor.</li>
+ <li><b>Llega tarde</b>: no alcanza 21 días de venta en su temporada.</li>
+ <li><b>Saturado</b> o <b>Sin demanda</b>: solo con números reales de proveedores, anuncios o ventas en Ecuador y Colombia. Si no hay números, el motivo se borra.</li>
+</ul>
+<p>El <b>permiso no es eliminatorio</b> (punto 10).</p>
+
+<h3>8. Qué hacer con cada producto (la caja "¿Qué hago?")</h3>
+<div class="tablewrap"><table><thead><tr><th>Decisión</th><th>Cuándo</th></tr></thead><tbody>
+ <tr><td>Pedir</td><td style="white-space:normal">Verde con costo.</td></tr>
+ <tr><td>Testear 1 caja</td><td style="white-space:normal">Amarillo con costo: pedir solo 1 caja, medir el CPA real y, si queda bajo el CPA máximo, pedir más.</td></tr>
+ <tr><td>Cotizar primero</td><td style="white-space:normal">Verde o amarillo sin costo: cotizar y escribirlo en "Tu cotización".</td></tr>
+ <tr><td>Confirmar permiso</td><td style="white-space:normal">Necesita permiso sin resolver.</td></tr>
+ <tr><td>No pedir</td><td style="white-space:normal">Rojo.</td></tr>
+ <tr><td>Sin analizar a fondo</td><td style="white-space:normal">Descartes rápidos: sin datos suficientes o fuera de temporada.</td></tr>
+</tbody></table></div>
+
+<h3>9. Revisión rápida y completa</h3>
+<ul>
+ <li><b>Rápida</b>: solo Dropkiller (productos y anuncios) y el catálogo de Imporfactory. No abre el navegador. La reciben todos los candidatos del radar y los productos con permiso.</li>
+ <li><b>Completa</b>: además TikTok, Biblioteca de anuncios de Meta y Google Trends (si es estacional), con máximo 10 acciones de navegador por producto. En el radar, solo los mejores y <b>máximo 10 por semana</b>. Las propuestas, Reanalizar y "Sí puedo traerlo" siempre llevan completa y no gastan cupo.</li>
+ <li>No se repite la búsqueda de un producto analizado hace menos de 7 días.</li>
+</ul>
+
+<h3>10. Productos con permiso</h3>
+<ul>
+ <li>Aplica a suplementos, cosméticos, maquillaje, alimentos, bebidas, medicamentos, dispositivos médicos, plaguicidas y productos de higiene con fórmula.</li>
+ <li>Llevan la etiqueta morada <b>REQUIERE PERMISO</b> con el permiso que el radar cree que aplica (por ejemplo, notificación sanitaria de ARCSA). Es su lectura: hay que confirmarla.</li>
+ <li>El semáforo se calcula igual que cualquier otro y se pueden cotizar.</li>
+ <li><b>Sí puedo traerlo</b> → quita la etiqueta y hace el análisis completo esa noche. <b>Descartar</b> → va a Descartes rápidos.</li>
+</ul>
+
+<h3>11. Lecturas sin umbrales inventados</h3>
+<ul>
+ <li><b>Libre / intermedio / saturado</b>: se compara la competencia del producto (proveedores y anuncios) con todos los productos analizados en las <b>últimas 8 semanas</b>. Si está en el tercio con menos competencia es libre; en el del medio, intermedio; en el de más, saturado. Hacen falta al menos <b>10 productos</b> para comparar; si no, la lectura sale "a criterio".</li>
+ <li><b>Ecuador vs Colombia</b>: qué porcentaje de las ventas de Colombia hace Ecuador en 30 días.</li>
+ <li><b>Ritmo</b>: ventas de la última semana comparadas con el promedio semanal del mes.</li>
+ <li><b>Tendencia</b>: cambio de ventas y proveedores desde el radar anterior.</li>
+</ul>
+
+<h3>12. La conclusión y sus etiquetas</h3>
+<div class="tablewrap"><table><thead><tr><th>Etiqueta</th><th>Qué número la respalda</th></tr></thead><tbody>
+ <tr><td>Probado</td><td style="white-space:normal">Ventas de 30 días reales en Colombia o Ecuador.</td></tr>
+ <tr><td>Ola en crecimiento</td><td style="white-space:normal">La última semana vendió más que el promedio del mes, o subió desde el radar anterior.</td></tr>
+ <tr><td>Océano azul con riesgo</td><td style="white-space:normal">Demanda en Colombia, otros países o videos, y en Ecuador casi nada.</td></tr>
+ <tr><td>Saturado con evidencia</td><td style="white-space:normal">Proveedores o anuncios de Ecuador con número.</td></tr>
+ <tr><td>Fuera de temporada</td><td style="white-space:normal">La cuenta de fechas dice que no llega.</td></tr>
+ <tr><td>Requiere permiso</td><td style="white-space:normal">Marcado con permiso sin resolver.</td></tr>
+</tbody></table></div>
+<p>Además trae <b>momento</b>, <b>lectura</b>, <b>riesgo</b> y <b>próxima revisión</b>: si es verde o amarillo, el último día para pedir de la próxima carga; si no, 4 semanas después. Aparece en Inicio, en "Revisar esta semana".</p>
+
+<h3>13. Confianza</h3>
+<ul>
+ <li><b>Alta</b>: faltan 2 datos o menos. <b>Media</b>: faltan 3 a 5. <b>Baja</b>: faltan más de 5.</li>
+ <li>Nunca es alta si 3 o más criterios del puntaje están vacíos o si hay un dato sospechoso.</li>
+ <li>Siempre es baja si el producto quedó "sin datos suficientes".</li>
+</ul>
+
+<h3>14. Tres tipos de producto</h3>
+<div class="tablewrap"><table><thead><tr><th></th><th>Producto de siempre</th><th>Producto de temporada</th><th>Producto con permiso</th></tr></thead><tbody>
+ <tr><th scope="row">Ejemplo</th><td style="white-space:normal">Pelador de cocina, brasier, cinta tapa goteras</td><td style="white-space:normal">Luces navideñas, regalos del Día de la Madre</td><td style="white-space:normal">Sérum, suplementos, gotas</td></tr>
+ <tr><th scope="row">Cómo entra</th><td style="white-space:normal">/radar y propuestas</td><td style="white-space:normal">/radar-temporada (en /radar se filtra si no llega)</td><td style="white-space:normal">/radar y propuestas</td></tr>
+ <tr><th scope="row">Qué importa</th><td style="white-space:normal">Escalera de países, saturación en Ecuador, videos, margen</td><td style="white-space:normal">Cuánto vendió la temporada pasada, cuándo arrancó, si llegas a tiempo y cuánto bajó el precio</td><td style="white-space:normal">Lo mismo que el de siempre, más confirmar el permiso</td></tr>
+ <tr><th scope="row">Saturación</th><td style="white-space:normal">Resta puntos</td><td style="white-space:normal"><b>No resta</b>: en temporada todos venden a la vez; lo que importa es llegar a tiempo</td><td style="white-space:normal">Resta puntos</td></tr>
+ <tr><th scope="row">Cuántas cajas</th><td style="white-space:normal">Amarillo: 1 caja de prueba. Verde: según capital (máx. 30% por producto)</td><td style="white-space:normal">Techo = lo que vendió el vendedor más débil ÷ piezas por caja, sin pasar el 30% del capital</td><td style="white-space:normal">Ninguna hasta confirmar el permiso</td></tr>
+ <tr><th scope="row">Rojo si</th><td style="white-space:normal">Eliminatorio o puntaje &lt; 50 con datos</td><td style="white-space:normal">No llega con 21 días de venta</td><td style="white-space:normal">Igual que el de siempre</td></tr>
+</tbody></table></div>
+
+<h3>15. Radar de temporada en detalle</h3>
+<ul>
+ <li>Solo temporadas del Calendario que la próxima carga alcanza con 21 días de venta.</li>
+ <li>Solo productos que Dropkiller ya seguía antes de la temporada del año pasado.</li>
+ <li>Mira desde <b>45 días antes</b> del inicio hasta <b>15 días después</b> del fin de la temporada pasada, con hasta <b>5 publicaciones</b> del mismo producto por país.</li>
+ <li><b>Inicio</b> = día en que se llegó al 10% de las ventas de ese periodo. <b>Pico</b> = la semana con más ventas. <b>Fin</b> = día del 90%.</li>
+ <li><b>Caída de precio</b>: precio de la primera semana contra el más bajo después del pico, con su fecha.</li>
+ <li><b>¿Se repite?</b>: si vendió dos temporadas seguidas, sale "vendió 2 años seguidos".</li>
+ <li><b>¿Llegas?</b>: compara la fecha en que estaría lista la próxima carga con el inicio de la ola de este año (misma fecha del año pasado).</li>
+ <li>Límites: no existe historial de cuántos proveedores había cada semana, el stock histórico no es confiable y la curva empieza cuando Dropkiller empezó a seguir el producto.</li>
+</ul>
+
+<h3>16. Armador, escenarios y archivo</h3>
+<ul>
+ <li>Máximo <b>30% del capital</b> en un solo producto (Ajustes).</li>
+ <li>Escenarios de una carga: <b>pesimista</b> vende 70% y remata el resto al 50% del costo; <b>base</b> vende 85% y remata al 70%; <b>optimista</b> vende todo. Según el método, 3 de cada 10 productos no rotan como se espera; el plan de salida es venta directa y luego remate en Black Friday.</li>
+ <li><b>Archivados</b>: productos del radar (no movidos por ti en el Pipeline y que no son verdes) que llevan <b>4 semanas</b> en seguimiento sin subir su puntaje.</li>
+</ul>
+<div class="note">Si un producto no está en Dropkiller ni en Imporfactory, no es rojo por eso: puede ser un océano azul. Se evalúa por videos y anuncios en otros países; sin costo, lo máximo que saca es amarillo.</div>
+</section>
+
 
 <section class="msec" id="simulador"><h2>Simulador del semáforo</h2>
 <p>Mueve los puntos y marca eliminatorios para ver qué color saldría.</p>
 <div class="sim" id="sim"></div>
 <div class="checks" id="simck">
- <label><input type="checkbox" data-e="Necesita permisos"> Necesita registro sanitario</label>
  <label><input type="checkbox" data-e="Llega tarde a su temporada"> Llega tarde a su temporada</label>
  <label><input type="checkbox" data-e="Margen menor a 30%"> Margen menor a 30%</label>
  <label><input type="checkbox" data-e="No da en venta directa"> No da en venta directa</label>
@@ -399,6 +569,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <div class="tablewrap"><table><thead><tr><th>Comando</th><th>Qué hace</th><th>Cuándo usarlo</th></tr></thead><tbody>
 <tr><td><span class="kbd">/radar</span></td><td style="white-space:normal">Estudio grande: revisa el top de Dropkiller en Colombia, Ecuador y México, filtra y analiza a fondo los 10 mejores. Los guarda en la app.</td><td style="white-space:normal">Cuando quieras buscar productos nuevos (por ejemplo, una vez por semana).</td></tr>
 <tr><td><span class="kbd">/analizar</span> + link, foto o nombre</td><td style="white-space:normal">Analiza un solo producto al momento.</td><td style="white-space:normal">Cuando viste algo y quieres el veredicto ya, sin pasar por la app.</td></tr>
+<tr><td><span class="kbd">/radar-temporada</span></td><td style="white-space:normal">Busca productos que vendieron fuerte la temporada pasada y arma su curva (inicio, pico, precio y cajas sugeridas).</td><td style="white-space:normal">Al menos 2 meses y medio antes de cada temporada: es lo que tarda una carga en estar lista para vender.</td></tr>
 <tr><td><span class="kbd">/analizar-cola</span></td><td style="white-space:normal">Analiza todo lo propuesto en la app que esté en cola.</td><td style="white-space:normal">Si no quieres esperar a las 8 pm.</td></tr>
 <tr><td><span class="kbd">/mcp</span></td><td style="white-space:normal">Muestra si Dropkiller está conectado. Si dice "needs authentication": Authenticate → copiar el enlace a Incogniton → Allow.</td><td style="white-space:normal">Si un análisis falla con Dropkiller.</td></tr>
 <tr><td><span class="kbd">/login</span></td><td style="white-space:normal">Vuelve a iniciar tu sesión de Claude, en tu Chrome normal y nunca en Incogniton.</td><td style="white-space:normal">Si aparece el error 401 o "Please run /login".</td></tr>
@@ -435,6 +606,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 
 <section class="msec faq" id="problemas"><h2>Problemas frecuentes</h2>
 <details><summary>Propuse un producto y no se analizó</summary><p>Se analiza a las 8 pm solo si la PC de Juank está prendida con Chrome abierto. Si estaba apagada, se analiza en la siguiente corrida. Juank puede forzarlo con /analizar-cola.</p></details>
+<details><summary>El análisis automático dice que no pudo usar Chrome (TikTok, anuncios)</summary><p>Hacen falta tres cosas a la vez: 1) la PC prendida y sin suspenderse (que se apague la pantalla no importa); 2) Chrome abierto con el perfil jctayupanta y la extensión de Claude con la misma cuenta que usas en la terminal; 3) que el comando automático arranque con <span class="kbd">--chrome</span> (ya está configurado desde el 8 de octubre). Para revisar: en la terminal escribe <span class="kbd">/chrome</span>; debe decir Status: Enabled y Extension: Installed. Si tienes dos navegadores conectados, elige el de jctayupanta en "Select browser…".</p></details>
 <details><summary>Dropkiller dejó de funcionar</summary><p>La conexión puede caducar o el dueño de la cuenta compartida puede quitarla. En la terminal: /mcp → dropkiller → Authenticate → copiar el enlace a Incogniton → Allow.</p></details>
 <details><summary>Claude Code pide /login</summary><p>Escribe /login e inicia sesión con tu cuenta de Claude en tu Chrome normal, nunca en Incogniton.</p></details>
 <details><summary>Un producto salió con "falta costo"</summary><p>No estaba en Imporfactory. Cotízalo y escribe el costo en la ficha, en "Tu cotización".</p></details>

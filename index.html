@@ -196,7 +196,7 @@ function expandir(raw) {
   });
   return out;
 }
-let cfg = { envio: 7, entrega: 0.75, cpa: 4, capital: 3000, tope: 0.30, topeSinDatos: 0.10 };
+let cfg = { envio: 7, entrega: 0.75, cpa: 4, capital: 3000, tope: 0.30, topeSinDatos: 0.10, etapa: 1 };
 let cur = "inicio", filtro = "todos", ficha = null, cajas = {}, calMes = null, cargando = true, errorMsg = "";
 
 const HOY = new Date(); HOY.setHours(0, 0, 0, 0);
@@ -279,14 +279,23 @@ function evaluar(p) {
     pz.ganancia = r >= 3 ? 15 : r >= 2 ? 12 : r >= 1.5 ? 9 : r >= 1 ? 6 : 0;
     if (cpaMax < cfg.cpa) elim.push("No da en venta directa: el precio no cubre costo, envío, devoluciones y publicidad");
   }
-  if (v.costo != null && pp) { margen = (pp - v.costo) / pp; if (margen < 0.30) elim.push(`Margen como proveedor de ${Math.round(margen * 100)}% (mínimo 30%)`); }
+  const avisos = [];
+  if (v.costo != null && pp) {
+    margen = (pp - v.costo) / pp;
+    if (margen < 0.30) {
+      if ((cfg.etapa || 1) >= 2) elim.push(`Margen como proveedor de ${Math.round(margen * 100)}% (mínimo 30%)`);
+      else avisos.push(`Como proveedor en Dropi dejaría ${Math.round(margen * 100)}% de margen (mínimo 30%): sirve para venta directa, no para la etapa 2.`);
+    }
+  }
   const known = Object.entries(pz).filter(([k, x]) => typeof x === "number" && PZ_MAX[k]);
   const sumW = known.reduce((a, [k]) => a + PZ_MAX[k], 0);
   const pts = sumW ? Math.round(100 * known.reduce((a, [, x]) => a + x, 0) / sumW) : (p.puntaje ?? null);
   let sem = elim.length ? "rojo" : pts >= 70 ? "verde" : pts >= 50 ? "amarillo" : "rojo";
   if (v.costo == null && sem === "verde") sem = "amarillo";
-  const cands = []; if (v.precio != null) cands.push(v.precio - cfg.envio - perdida() - cfg.cpa); if (pp) cands.push(pp * 0.7);
+  const cands = []; if (v.precio != null) cands.push(v.precio - cfg.envio - perdida() - cfg.cpa);
+  if (pp && ((cfg.etapa || 1) >= 2 || !cands.length)) cands.push(pp * 0.7);
   const costoMax = cands.length ? Math.min(...cands) : null;
+  const costoProveedor = pp ? pp * 0.7 : null;
   let decision, pasos;
   if (sem === "rojo") { decision = "No pedir"; pasos = [elim[0] || "El puntaje con los datos reales es bajo (" + pts + ").", "Queda en el historial. Si cambia el mercado, usa Reanalizar."]; }
   else if (v.costo == null) { decision = "Cotizar primero"; pasos = ["Cotiza en Imporfactory (calculadora o asesor) el costo puesto por unidad, con piezas por caja y CBM.", costoMax != null ? `Si el costo puesto sale en ${money(costoMax)} o menos, vale la pena.` : "Falta el precio de venta para calcular el costo máximo.", "Escribe la cotización abajo en \"Tu cotización\" y pulsa Guardar: el semáforo se recalcula."]; }
@@ -294,7 +303,7 @@ function evaluar(p) {
   else { decision = "Pedir"; pasos = ["Agrégalo en el Armador de carga.", "Pide antes de la fecha límite: " + (v.pedir || fmtCorto(proximaSalida().pedir)) + ".", "Prepara los creativos mientras llega."]; }
   if (tea && tea.suficientes_dias !== false && tea.llega_antes_del_inicio === false && sem !== "rojo") pasos.push(`Ojo: la carga llega el ${fmtCorto(iso(tea.lista_para_vender))} y la ola arrancó ~${fmtCorto(iso(tea.inicio_esperado))} el año pasado: llegas después del inicio.`);
   if (perm && sem !== "rojo") { decision = "Confirmar permiso"; pasos = [`Confirma con el curso o el agente si de verdad necesita ${perm.tipo || "permiso"} y si se puede traer en el barco grupal.`, "Mientras tanto puedes cotizarlo igual (abajo, en Tu cotización).", "Si sí puedes traerlo, pulsa \"Sí puedo traerlo\": se hace el análisis completo esa noche. Si no, pulsa \"Descartar\"."]; }
-  return { sem, pts, decision, pasos, costoMax, elim, pz, cpaMax, margen, perm };
+  return { sem, pts, decision, pasos, costoMax, costoProveedor, elim, pz, cpaMax, margen, perm, avisos };
 }
 
 async function cargar() {
@@ -447,7 +456,8 @@ const V = {
   },
   ajustes() {
     return `<h2>Ajustes</h2><p class="sub">Supuestos que usa la calculadora. Reemplázalos con tus datos reales cuando vendas.</p><form class="panel form" id="fa"><div class="calc">
-    <div><label for="a-env">Envío por pedido ($)</label><input id="a-env" type="number" step="0.01" value="${cfg.envio}"></div><div><label for="a-ent">% de entrega</label><input id="a-ent" type="number" value="${Math.round(cfg.entrega * 100)}"></div><div><label for="a-cpa">CPA de referencia ($)</label><input id="a-cpa" type="number" step="0.01" value="${cfg.cpa}"></div><div><label for="a-cap">Capital ($)</label><input id="a-cap" type="number" value="${cfg.capital}"></div><div><label for="a-tope">Tope por producto (%)</label><input id="a-tope" type="number" value="${Math.round(cfg.tope * 100)}"></div></div>
+    <div><label for="a-env">Envío por pedido ($)</label><input id="a-env" type="number" step="0.01" value="${cfg.envio}"></div><div><label for="a-ent">% de entrega</label><input id="a-ent" type="number" value="${Math.round(cfg.entrega * 100)}"></div><div><label for="a-cpa">CPA de referencia ($)</label><input id="a-cpa" type="number" step="0.01" value="${cfg.cpa}"></div><div><label for="a-cap">Capital ($)</label><input id="a-cap" type="number" value="${cfg.capital}"></div><div><label for="a-tope">Tope por producto (%)</label><input id="a-tope" type="number" value="${Math.round(cfg.tope * 100)}"></div><div><label for="a-etapa">Etapa del negocio</label><select id="a-etapa"><option value="1" ${(cfg.etapa || 1) < 2 ? "selected" : ""}>1 · Venta directa</option><option value="2" ${(cfg.etapa || 1) >= 2 ? "selected" : ""}>2 · Proveedor en Dropi</option></select></div></div>
+    <p class="sub" style="font-size:13px;margin:0">Etapa 1: solo descarta si no da ganancia en venta directa; el margen como proveedor sale como aviso. Etapa 2: además descarta si como proveedor deja menos de 30%.</p>
     <button class="btn" type="submit">Guardar ajustes</button><div id="amsg" class="sub" style="margin:0"></div></form>`;
   }
 };
@@ -500,7 +510,9 @@ function decisionHTML(p, ev) {
   const v = vals(p); const cls = { "Pedir": "verde", "Testear 1 caja": "amarillo", "Cotizar primero": "amarillo", "No pedir": "rojo", "En análisis": "gris", "Sin analizar a fondo": "gris", "Confirmar permiso": "morado" }[ev.decision];
   const cambio = v.costoReal && (p.semaforo || "gris") !== ev.sem ? `<p style="margin:8px 0 0"><b>Con tu costo cotizado de ${money(v.costo)}</b> el producto pasó de ${S[p.semaforo]} a <span class="pill ${ev.sem}">${S[ev.sem]}</span>.</p>` : v.costoReal ? `<p style="margin:8px 0 0">Calculado con tu costo cotizado de <b>${money(v.costo)}</b>.</p>` : "";
   return `<div class="decision ${cls}"><div class="row" style="flex-wrap:wrap;align-items:flex-start"><div><div class="ex">¿Qué hago con este producto?</div><div class="dtit">${esc(ev.decision)}</div></div>${ev.costoMax != null ? `<div class="cmax"><div class="ex">Costo puesto máximo</div><b>${money(ev.costoMax)}</b><div class="ex">por unidad para que valga la pena</div></div>` : ""}</div>
-   <ol class="dpasos">${ev.pasos.map(x => `<li>${esc(x)}</li>`).join("")}</ol>${cambio}</div>`;
+   <ol class="dpasos">${ev.pasos.map(x => `<li>${esc(x)}</li>`).join("")}</ol>${cambio}
+   ${(ev.avisos || []).map(a => `<p class="ex" style="margin:8px 0 0;text-transform:none;letter-spacing:0;font-size:12px">⚠ ${esc(a)}</p>`).join("")}
+   ${ev.costoProveedor != null && (cfg.etapa || 1) < 2 && ev.costoMax != null ? `<p class="ex" style="margin:6px 0 0;text-transform:none;letter-spacing:0;font-size:12px">Etapa 1 (venta directa): el costo máximo se calcula solo con venta directa. Para servir también como proveedor en Dropi (etapa 2) tendría que costar ${money(ev.costoProveedor)} o menos.</p>` : ""}</div>`;
 }
 function fichaV(p) {
   const v = vals(p), ev = evaluar(p), sem = ev.sem; const t = Object.entries(ev.pz);
@@ -637,7 +649,7 @@ document.getElementById("view").addEventListener("submit", async e => {
     const [y, m] = inicio.split("-").map(Number); calMes = new Date(y, m - 1, 1); cargar();
   }
   if (id === "fa") {
-    const supuestos = { envio: +val("a-env"), entrega: +val("a-ent") / 100, cpa: +val("a-cpa"), capital: +val("a-cap"), tope: +val("a-tope") / 100, topeSinDatos: cfg.topeSinDatos };
+    const supuestos = { envio: +val("a-env"), entrega: +val("a-ent") / 100, cpa: +val("a-cpa"), capital: +val("a-cap"), tope: +val("a-tope") / 100, topeSinDatos: cfg.topeSinDatos, etapa: +val("a-etapa") || 1 };
     const r = await db.from("config").update({ valor: supuestos }).eq("clave", "supuestos");
     if (r.error) return msg("amsg", "No se pudo guardar: " + r.error.message, true);
     msg("amsg", "Ajustes guardados."); cfg = { ...cfg, ...supuestos };

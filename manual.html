@@ -352,7 +352,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 </section>
 
 <section class="msec" id="ajustes"><h2>Ajustes</h2>
-<p>Los supuestos que usa la calculadora: <b>envío</b> ($7), <b>% de entrega</b> (75%), <b>CPA de referencia</b> ($4), <b>capital</b> y <b>tope por producto</b> (30%). Cuando tengas ventas reales, cámbialos por tus números y todo se recalcula.</p>
+<p>Los supuestos que usa la calculadora: <b>envío</b> ($7), <b>% de entrega</b> (75%), <b>CPA de referencia</b> ($4), <b>capital</b>, <b>tope por producto</b> (30%) y <b>etapa del negocio</b> (1 = venta directa, la actual; 2 = proveedor en Dropi, cuando den ese paso: ahí el margen de proveedor menor a 30% vuelve a poner rojo). Cuando tengas ventas reales, cámbialos por tus números y todo se recalcula.</p>
 <div class="note warn">Cualquier persona con el link puede cambiar los ajustes. Compártelo solo con los inversores.</div>
 </section>
 
@@ -443,8 +443,9 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li><b>Pérdida por no entregados</b> = envío × (1 − % entrega) ÷ % entrega. Con envío $7 y 75% de entrega: $7 × 0,25 ÷ 0,75 = <b>$2,33</b> por pedido entregado.</li>
  <li><b>CPA máximo</b> = precio al cliente − costo puesto − envío − pérdida. Es lo más que puedes pagar en anuncios por venta sin perder.</li>
  <li><b>Ganancia por pedido</b> = CPA máximo − CPA de referencia ($4 por defecto, se cambia en Ajustes).</li>
- <li><b>Margen como proveedor</b> = (precio proveedor − costo) ÷ precio proveedor. Mínimo 30%.</li>
- <li><b>Costo puesto máximo</b> (lo que muestra la ficha) = el menor entre (precio al cliente − envío − pérdida − CPA de referencia) y (precio proveedor × 0,7). Si cotizas por debajo de ese número, vale la pena.</li>
+ <li><b>Margen como proveedor</b> = (precio proveedor − costo) ÷ precio proveedor. Mínimo 30% para la etapa 2.</li>
+ <li><b>Costo puesto máximo</b> (lo que muestra la ficha): en <b>etapa 1</b> = precio al cliente − envío − pérdida − CPA de referencia. En <b>etapa 2</b> = el menor entre eso y precio proveedor × 0,7. Si cotizas por debajo de ese número, vale la pena. En etapa 1 la ficha también te dice cuánto tendría que costar para servir como proveedor después.</li>
+ <li><b>Ejemplo de "se vende mucho pero barato"</b>: si los proveedores venden a $1 y a ti te cuesta $1, el margen como proveedor es 0%. En etapa 1 la decisión la toma la venta directa: si en los anuncios se vende a $5, quedan $5 − $1 − $7 − $2,33 = negativo, así que sale rojo por "No da en venta directa". Si en cambio se vende a $20, quedan $9,67 para anuncios: pasa, con el aviso de que no sirve para Dropi.</li>
 </ul>
 
 <h3>7. El color del semáforo</h3>
@@ -456,8 +457,8 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 </tbody></table></div>
 <p><b>Eliminatorios</b> (cualquiera pone rojo):</p>
 <ul>
- <li><b>No da en venta directa</b>: el CPA máximo es menor al CPA de referencia.</li>
- <li><b>Margen bajo</b>: menos de 30% como proveedor.</li>
+ <li><b>No da en venta directa</b>: el CPA máximo es menor al CPA de referencia (siempre).</li>
+ <li><b>Margen bajo como proveedor</b>: menos de 30%. <b>Solo en etapa 2</b> (Ajustes → Etapa del negocio). En etapa 1, que es la actual, sale como aviso en la ficha y no pone rojo, porque el plan es vender directo hasta capitalizarse.</li>
  <li><b>Llega tarde</b>: no alcanza 21 días de venta en su temporada.</li>
  <li><b>Saturado</b> o <b>Sin demanda</b>: solo con números reales de proveedores, anuncios o ventas en Ecuador y Colombia. Si no hay números, el motivo se borra.</li>
 </ul>

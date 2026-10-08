@@ -256,7 +256,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <section class="msec" id="ficha"><h2>Ficha del producto</h2>
 <h3>Lo que ves</h3>
 <ul>
- <li><b>Escalera de países</b>: cómo va el producto en Colombia, Ecuador y México. Lo ideal es que esté fuerte en Colombia y poco presente en Ecuador.</li>
+ <li><b>¿Qué hago con este producto?</b>: la decisión (Pedir, Testear 1 caja, Cotizar primero o No pedir), los próximos pasos y el <b>costo puesto máximo</b> para que valga la pena.</li><li><b>Escalera de países</b>: una tabla en dólares con ventas de 7 y 30 días, proveedores, precio proveedor, anuncios activos y una lectura por país (Libre, Intermedio o Saturado). Lo ideal: fuerte en Colombia y Ecuador libre.</li><li><b>Reanalizar</b>: vuelve a mandar el producto a la cola para actualizar sus datos.</li>
  <li><b>Puntaje desglosado</b>: cuántos puntos sacó en cada criterio (ver <a href="#reglas">Reglas</a>).</li>
  <li><b>Falta</b>: datos que no se encontraron. Nunca se inventan.</li>
  <li><b>Fuentes</b>: de dónde salió cada dato.</li>
@@ -267,7 +267,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Si te dieron medidas reales, llena <b>piezas por caja</b> y <b>CBM por caja</b>.</li>
  <li>Cambia el <b>estado</b>: Aprobado, En test, Pedido, En camino o Descartado.</li>
  <li>Agrega una <b>nota</b> si quieres. Ejemplo: "proveedor Yiwu, muestra pedida".</li>
- <li>Pulsa <b>Guardar cotización</b>. El costo pasa a <span class="tag real">REAL</span> y todo se recalcula.</li>
+ <li>Pulsa <b>Guardar cotización</b>. El costo pasa a <span class="tag real">REAL</span> y la app recalcula la ganancia, el puntaje, el semáforo y la decisión. Si cambia de color, te lo dice.</li>
 </ol>
 <div class="note">El radar nunca sobrescribe lo que tú escribiste en la cotización.</div>
 </section>
@@ -313,7 +313,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 </section>
 
 <section class="msec" id="pipeline"><h2>Pipeline</h2>
-<p>Un tablero con columnas por estado: <b>En cola → Analizado → Aprobado → En test → Pedido → En camino → Descartado</b>. El estado se cambia desde la ficha de cada producto.</p>
+<p>Un tablero con columnas por estado: <b>En cola → Analizado → Aprobado → En test → Pedido → En camino → Descartado</b>. En computadora, <b>arrastra</b> la tarjeta a otra columna. En el celular, usa <b>"Mover a…"</b> en cada tarjeta. Se guarda al instante. Toca el nombre para abrir la ficha.</p>
 </section>
 
 <section class="msec" id="calendario"><h2>Calendario</h2>
@@ -396,13 +396,14 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 </ul>
 <h3>Comandos en la terminal</h3>
 <p>Abre la terminal en <span class="kbd">C:\Users\juanc</span>, escribe <span class="kbd">claude</span> y luego:</p>
-<dl class="glos">
- <dt><span class="kbd">/radar</span></dt><dd>El estudio grande: revisa Dropkiller en Colombia, Ecuador y México, elige los 10 mejores y los analiza. Úsalo cuando quieras buscar productos nuevos.</dd>
- <dt><span class="kbd">/analizar</span> + link o nombre</dt><dd>Analiza un solo producto al momento.</dd>
- <dt><span class="kbd">/analizar-cola</span></dt><dd>Analiza ya todo lo que está en cola, sin esperar a las 8 pm.</dd>
- <dt><span class="kbd">/mcp</span></dt><dd>Revisa si Dropkiller está conectado.</dd>
- <dt><span class="kbd">/usage</span></dt><dd>Muestra cuánto del plan Pro llevas usado.</dd>
-</dl>
+<div class="tablewrap"><table><thead><tr><th>Comando</th><th>Qué hace</th><th>Cuándo usarlo</th></tr></thead><tbody>
+<tr><td><span class="kbd">/radar</span></td><td style="white-space:normal">Estudio grande: revisa el top de Dropkiller en Colombia, Ecuador y México, filtra y analiza a fondo los 10 mejores. Los guarda en la app.</td><td style="white-space:normal">Cuando quieras buscar productos nuevos (por ejemplo, una vez por semana).</td></tr>
+<tr><td><span class="kbd">/analizar</span> + link, foto o nombre</td><td style="white-space:normal">Analiza un solo producto al momento.</td><td style="white-space:normal">Cuando viste algo y quieres el veredicto ya, sin pasar por la app.</td></tr>
+<tr><td><span class="kbd">/analizar-cola</span></td><td style="white-space:normal">Analiza todo lo propuesto en la app que esté en cola.</td><td style="white-space:normal">Si no quieres esperar a las 8 pm.</td></tr>
+<tr><td><span class="kbd">/mcp</span></td><td style="white-space:normal">Muestra si Dropkiller está conectado. Si dice "needs authentication": Authenticate → copiar el enlace a Incogniton → Allow.</td><td style="white-space:normal">Si un análisis falla con Dropkiller.</td></tr>
+<tr><td><span class="kbd">/login</span></td><td style="white-space:normal">Vuelve a iniciar tu sesión de Claude, en tu Chrome normal y nunca en Incogniton.</td><td style="white-space:normal">Si aparece el error 401 o "Please run /login".</td></tr>
+<tr><td><span class="kbd">/usage</span></td><td style="white-space:normal">Muestra cuánto del plan Pro llevas usado.</td><td style="white-space:normal">Antes de un /radar grande.</td></tr>
+</tbody></table></div>
 <h3>Automático a las 8 pm</h3>
 <p>Una tarea de Windows revisa la cola. Si no hay nada, termina sin gastar. Si hay propuestas, Claude Code las analiza y las guarda en la app.</p>
 </section>

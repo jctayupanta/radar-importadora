@@ -117,12 +117,26 @@ details.help dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6p
 details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
 </style>
-<style>.ev{white-space:normal!important;overflow:visible!important}.ev.salida{background:var(--ink);color:var(--bg)}.ev.lis{background:var(--verde)}.sw.salida{background:var(--ink)}.sw.lis{background:var(--verde)}.day{min-height:96px}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<style>.decision{border-radius:10px;padding:14px 16px;margin:14px 0;border:2px solid var(--line);background:var(--surface)}
+.decision.verde{border-color:var(--verde);background:var(--verde-bg)}.decision.amarillo{border-color:var(--amarillo);background:var(--amarillo-bg)}.decision.rojo{border-color:var(--rojo);background:var(--rojo-bg)}.decision.gris{background:var(--gris-bg)}
+.dtit{font-family:var(--display);font-size:34px;font-weight:700;text-transform:uppercase;line-height:1.05}
+.cmax{text-align:right;margin-left:auto}.cmax b{font-family:var(--display);font-size:30px;display:block;line-height:1.1}
+.dpasos{margin:10px 0 0;padding-left:20px;display:grid;gap:4px;max-width:70ch}
+.tag.dec{background:var(--ink);color:var(--bg)}
+.mini{display:flex;flex-direction:column;gap:6px;cursor:grab}.mini.drag{opacity:.4}
+.mlink{background:none;border:0;padding:0;font:inherit;color:var(--ink);text-align:left;cursor:pointer}.mlink:hover{text-decoration:underline}
+.msel{font-size:12px;padding:3px 6px}
+.col.over{outline:2px dashed var(--accent);outline-offset:-4px}
+table.esc th[scope=row]{color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;font-size:13px}
+table.esc thead th{font-family:var(--display);font-size:14px;color:var(--ink)}
+.hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+a.btn{text-decoration:none;display:inline-block}
+.ev{white-space:normal!important;overflow:visible!important}.ev.salida{background:var(--ink);color:var(--bg)}.ev.lis{background:var(--verde)}.sw.salida{background:var(--ink)}.sw.lis{background:var(--verde)}.day{min-height:96px}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head><body>
 <div class="wrap">
   <header>
     <h1>Radar de Importación<small>Importadora El Coca · Barco grupal desde 1 caja</small></h1>
-    <div class="next" id="next"></div>
+    <div class="hdr-actions"><div class="next" id="next"></div><a class="btn ghost" href="manual.html" style="font-size:15px;padding:6px 12px">Manual</a></div>
   </header>
   <nav role="tablist" id="tabs"></nav>
   <main id="view"></main>
@@ -210,6 +224,36 @@ function vals(p) {
   };
 }
 
+// ===== Evaluación en la app: recalcula ganancia y semáforo con el costo (estimado o cotizado) =====
+const PAISES = [["CO", "Colombia"], ["EC", "Ecuador"], ["MX", "México"]];
+function perdida() { const e = cfg.entrega; return e > 0 ? cfg.envio * (1 - e) / e : 0; }
+function evaluar(p) {
+  const d = p.datos || {}, v = vals(p);
+  if ((p.semaforo || "gris") === "gris") return { sem: "gris", pts: null, decision: "En análisis", pasos: ["Se analiza a las 8 pm o con /analizar-cola."], costoMax: null, elim: [], pz: v.pz };
+  const pz = { ...v.pz }; const elim = [];
+  if (p.semaforo === "rojo" && ["Permisos", "Llega tarde"].includes(d.motivo_tipo)) elim.push(d.motivo_tipo === "Permisos" ? "Necesita registro sanitario" : "Llega tarde a su temporada");
+  const pp = d.precio_proveedor_usd ?? null; let cpaMax = null, margen = null;
+  if (v.costo != null && v.precio != null) {
+    cpaMax = v.precio - v.costo - cfg.envio - perdida(); const r = cpaMax / cfg.cpa;
+    pz.ganancia = r >= 3 ? 15 : r >= 2 ? 12 : r >= 1.5 ? 9 : r >= 1 ? 6 : 0;
+    if (cpaMax < cfg.cpa) elim.push("No da en venta directa: el precio no cubre costo, envío, devoluciones y publicidad");
+  }
+  if (v.costo != null && pp) { margen = (pp - v.costo) / pp; if (margen < 0.30) elim.push(`Margen como proveedor de ${Math.round(margen * 100)}% (mínimo 30%)`); }
+  const known = Object.entries(pz).filter(([k, x]) => typeof x === "number" && PZ_MAX[k]);
+  const sumW = known.reduce((a, [k]) => a + PZ_MAX[k], 0);
+  const pts = sumW ? Math.round(100 * known.reduce((a, [, x]) => a + x, 0) / sumW) : (p.puntaje ?? null);
+  let sem = elim.length ? "rojo" : pts >= 70 ? "verde" : pts >= 50 ? "amarillo" : "rojo";
+  if (v.costo == null && sem === "verde") sem = "amarillo";
+  const cands = []; if (v.precio != null) cands.push(v.precio - cfg.envio - perdida() - cfg.cpa); if (pp) cands.push(pp * 0.7);
+  const costoMax = cands.length ? Math.min(...cands) : null;
+  let decision, pasos;
+  if (sem === "rojo") { decision = "No pedir"; pasos = [elim[0] || "El puntaje con los datos reales es bajo (" + pts + ").", "Queda en el historial. Si cambia el mercado, usa Reanalizar."]; }
+  else if (v.costo == null) { decision = "Cotizar primero"; pasos = ["Cotiza en Imporfactory (calculadora o asesor) el costo puesto por unidad, con piezas por caja y CBM.", costoMax != null ? `Si el costo puesto sale en ${money(costoMax)} o menos, vale la pena.` : "Falta el precio de venta para calcular el costo máximo.", "Escribe la cotización abajo en \"Tu cotización\" y pulsa Guardar: el semáforo se recalcula."]; }
+  else if (sem === "amarillo") { decision = "Testear 1 caja"; pasos = ["Pide solo 1 caja en la próxima carga para probar.", "Prueba anuncios en Meta y mide el CPA real.", "Si el CPA real queda por debajo del CPA máximo, pasa a Aprobado y pide más."]; }
+  else { decision = "Pedir"; pasos = ["Agrégalo en el Armador de carga.", "Pide antes de la fecha límite: " + (v.pedir || fmtCorto(proximaSalida().pedir)) + ".", "Prepara los creativos mientras llega."]; }
+  return { sem, pts, decision, pasos, costoMax, elim, pz, cpaMax, margen };
+}
+
 async function cargar() {
   cargando = true; errorMsg = "";
   try {
@@ -236,10 +280,10 @@ document.getElementById("tabs").onclick = e => { const t = e.target.dataset.t; i
 
 function thumb(p) { return p.foto_url ? `<img class="thumb" src="${esc(p.foto_url)}" alt="" style="object-fit:cover">` : `<div class="thumb">${esc((p.nombre || "?")[0])}</div>`; }
 function card(p) {
-  const v = vals(p), sem = p.semaforo || "gris";
+  const v = vals(p), ev = evaluar(p), sem = ev.sem;
   return `<button class="card" data-f="${p.id}"><div class="stripe s-${sem}"></div><div class="in">
-  <div class="row">${thumb(p)}<div style="flex:1;min-width:0"><div class="name">${esc(p.nombre)}</div><div class="ex">${esc(p.nicho || "")} · ${p.origen === "propuesta" ? "Propuesto" : "Radar"}</div></div><div class="score">${p.puntaje ?? "—"}</div></div>
-  <div><span class="pill ${sem}">${S[sem]}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costoReal ? "REAL" : "ESTIMADO"}</span></div>
+  <div class="row">${thumb(p)}<div style="flex:1;min-width:0"><div class="name">${esc(p.nombre)}</div><div class="ex">${esc(p.nicho || "")} · ${p.origen === "propuesta" ? "Propuesto" : "Radar"}</div></div><div class="score">${ev.pts ?? "—"}</div></div>
+  <div><span class="pill ${sem}">${S[sem]}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : v.costoReal ? "REAL" : "ESTIMADO"}</span> <span class="tag dec">${esc(ev.decision)}</span></div>
   <div style="font-size:13px">${esc(p.motivo || "")}</div>
   <div class="kv"><span>Inversión 1 caja</span><span>${v.costo && v.piezas ? money(v.costo * v.piezas) : "—"}</span><span>Pedir hasta</span><span>${esc(v.pedir || "—")}</span><span>Lista para vender</span><span>${esc(v.lista || "—")}</span></div></div></button>`;
 }
@@ -247,7 +291,7 @@ const vacio = (t) => `<div class="panel"><p class="sub" style="margin:0">${t}</p
 
 const V = {
   inicio() {
-    const c = k => P.filter(p => (p.semaforo || "gris") === k).length;
+    const c = k => P.filter(p => evaluar(p).sem === k).length;
     const cola = PROP.filter(x => x.estado === "en_cola").length;
     const al = P.flatMap(p => vals(p).alertas.map(a => ({ p, a })));
     return `<h2>Resumen</h2><p class="sub">Lo que hay hoy y lo que tienes que decidir.</p>
@@ -267,21 +311,21 @@ const V = {
      <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => `<div class="alert"><span class="pill gris">Cola</span><div><b>${esc(x.link || "Foto")}</b><br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))}</span></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}</div></div>`;
   },
   semaforo() {
-    const l = P.filter(p => filtro === "todos" || (p.semaforo || "gris") === filtro);
+    const l = P.filter(p => filtro === "todos" || evaluar(p).sem === filtro);
     return `<h2>Semáforo</h2><p class="sub">Toca un producto para ver su ficha completa y la calculadora.</p>
     <div class="filters">${["todos", "verde", "amarillo", "rojo", "gris"].map(k => `<button class="chipbtn" aria-pressed="${filtro === k}" data-fl="${k}">${k === "todos" ? "Todos" : S[k]}</button>`).join("")}</div>
     ${l.length ? `<div class="grid">${l.map(card).join("")}</div>` : vacio("Aún no hay productos aquí. Propón uno en la pestaña Proponer o corre /radar en la terminal.")}`;
   },
   armador() {
     let tot = 0, cbm = 0; const warn = [];
-    const rows = P.filter(p => ["verde", "amarillo"].includes(p.semaforo)).map(p => { const v = vals(p); const c = cajas[p.id] ?? 0; const inv = v.costo && v.piezas ? c * v.piezas * v.costo : 0; tot += inv; cbm += c * (v.cbm || 0); return { p, v, c, inv }; });
+    const rows = P.filter(p => ["verde", "amarillo"].includes(evaluar(p).sem)).map(p => { const v = vals(p); const c = cajas[p.id] ?? 0; const inv = v.costo && v.piezas ? c * v.piezas * v.costo : 0; tot += inv; cbm += c * (v.cbm || 0); return { p, v, c, inv }; });
     rows.forEach(r => { if (r.inv > cfg.capital * cfg.tope) warn.push(`${r.p.nombre}: supera el ${Math.round(cfg.tope * 100)}% del capital`); if (!r.v.costo && r.c) warn.push(`${r.p.nombre}: falta el costo, cotízalo`); });
     if (tot > cfg.capital) warn.push("Te pasas del capital disponible");
     const ps = proximaSalida(); const pct = Math.min(100, tot / cfg.capital * 100);
     return `<h2>Armador de carga</h2><p class="sub">Elige cuántas cajas de cada producto en verde o amarillo. Máximo ${Math.round(cfg.tope * 100)}% del capital en un solo producto.</p>
     <div class="panel form" style="margin-bottom:12px;max-width:340px"><div><label for="arm-cap">Capital para esta carga ($)</label><input id="arm-cap" type="number" min="0" step="50" value="${cfg.capital}"></div><p class="sub" style="margin:0;font-size:12px">Escribe el monto y pulsa Enter o sal del campo. El valor por defecto se cambia en Ajustes.</p></div>
     ${rows.length ? `<div class="panel"><div class="tablewrap"><table><thead><tr><th>Producto</th><th>Semáforo</th><th>Cajas</th><th>Unidades</th><th>CBM</th><th>Inversión</th></tr></thead><tbody>
-    ${rows.map(({ p, v, c, inv }) => `<tr><td>${esc(p.nombre)}</td><td><span class="pill ${p.semaforo}">${S[p.semaforo]}</span></td><td><span class="step"><button data-m="${p.id}" aria-label="Quitar caja">−</button><span>${c}</span><button data-a="${p.id}" aria-label="Agregar caja">+</button></span></td><td class="num">${v.piezas ? c * v.piezas : "—"}</td><td class="num">${(c * (v.cbm || 0)).toFixed(3)}</td><td class="num">${money(inv)}</td></tr>`).join("")}
+    ${rows.map(({ p, v, c, inv }) => `<tr><td>${esc(p.nombre)}</td><td><span class="pill ${evaluar(p).sem}">${S[evaluar(p).sem]}</span></td><td><span class="step"><button data-m="${p.id}" aria-label="Quitar caja">−</button><span>${c}</span><button data-a="${p.id}" aria-label="Agregar caja">+</button></span></td><td class="num">${v.piezas ? c * v.piezas : "—"}</td><td class="num">${(c * (v.cbm || 0)).toFixed(3)}</td><td class="num">${money(inv)}</td></tr>`).join("")}
     </tbody></table></div>
     <div style="margin-top:14px" class="row"><b>Capital usado</b><span style="font-family:var(--mono)">${money(tot)} de ${money(cfg.capital)}</span></div><div class="bar"><i style="width:${pct}%"></i></div>
     ${warn.map(w => `<p class="warn">⚠ ${esc(w)}</p>`).join("")}
@@ -292,8 +336,8 @@ const V = {
   },
   pipeline() {
     const cols = [["en_cola", "En cola"], ...ESTADOS.map(e => [e, EST_TXT[e]])];
-    const items = [...PROP.filter(x => x.estado === "en_cola").map(x => ({ e: "en_cola", n: x.link || "Foto propuesta", sem: "gris" })), ...P.map(p => ({ e: p.estado || "analizado", n: p.nombre, sem: p.semaforo || "gris", id: p.id }))];
-    return `<h2>Pipeline</h2><p class="sub">Dónde está cada producto. Cambia el estado desde la ficha.</p><div class="kanban">${cols.map(([k, l]) => `<div class="col"><h3>${l}</h3>${items.filter(i => i.e === k).map(i => `<div class="mini" style="border-left-color:var(--${i.sem})">${esc(i.n)}</div>`).join("")}</div>`).join("")}</div>`;
+    const items = [...PROP.filter(x => x.estado === "en_cola").map(x => ({ e: "en_cola", n: x.link || "Foto propuesta", sem: "gris" })), ...P.map(p => ({ e: p.estado || "analizado", n: p.nombre, sem: evaluar(p).sem, id: p.id }))];
+    return `<h2>Pipeline</h2><p class="sub">Arrastra cada tarjeta a otra columna o usa "Mover a…". Se guarda al instante.</p><div id="pmsg" class="sub" style="margin:0 0 8px"></div><div class="kanban">${cols.map(([k, l]) => `<div class="col" data-col="${k}"><h3>${l} <span class="ex">${items.filter(i => i.e === k).length}</span></h3>${items.filter(i => i.e === k).map(i => i.id ? `<div class="mini" draggable="true" data-pid="${i.id}" style="border-left-color:var(--${i.sem})"><button class="mlink" data-f="${i.id}">${esc(i.n)}</button><select class="msel" data-mover="${i.id}" aria-label="Mover ${esc(i.n)} a otro estado"><option value="">Mover a…</option>${ESTADOS.filter(e => e !== k).map(e => `<option value="${e}">${EST_TXT[e]}</option>`).join("")}</select></div>` : `<div class="mini" style="border-left-color:var(--gris)">${esc(i.n)}</div>`).join("")}</div>`).join("")}</div>`;
   },
   calendario() {
     const y = calMes.getFullYear(), m = calMes.getMonth(); const first = new Date(y, m, 1), start = (first.getDay() + 6) % 7, dias = new Date(y, m + 1, 0).getDate();
@@ -314,12 +358,12 @@ const V = {
      <button class="btn" type="submit">Agregar al calendario</button><div id="tmsg" class="sub" style="margin:0"></div></form></div>`;
   },
   historial() {
-    const rows = [...P.map(p => ({ f: new Date(p.creado), n: p.nombre, q: p.datos?.propuesto_por || (p.origen === "propuesta" ? "Propuesta" : "Radar"), sem: p.semaforo || "gris", m: p.motivo })),
+    const rows = [...P.map(p => ({ f: new Date(p.creado), n: p.nombre, q: p.datos?.propuesto_por || (p.origen === "propuesta" ? "Propuesta" : "Radar"), sem: evaluar(p).sem, m: p.motivo })),
     ...PROP.filter(x => x.estado === "en_cola").map(x => ({ f: new Date(x.creado), n: x.link || "Foto propuesta", q: x.propuesto_por, sem: "gris", m: "En cola · se analiza a las 8 pm" }))].sort((a, b) => b.f - a.f);
     return `<h2>Historial</h2><p class="sub">Todo lo propuesto y analizado. Nada se borra.</p><div class="panel"><input id="buscar" placeholder="Buscar producto…" style="margin-bottom:10px"><div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Propuso</th><th>Semáforo</th><th>Motivo</th></tr></thead><tbody id="hbody">${rows.map(r => `<tr><td>${fmtCorto(r.f)}</td><td>${esc(r.n)}</td><td>${esc(r.q || "—")}</td><td><span class="pill ${r.sem}">${S[r.sem]}</span></td><td style="white-space:normal;min-width:240px">${esc(r.m || "")}</td></tr>`).join("")}</tbody></table></div></div>`;
   },
   inversores() {
-    const desc = P.filter(p => p.semaforo === "rojo");
+    const desc = P.filter(p => evaluar(p).sem === "rojo");
     const motivos = {}; desc.forEach(p => { const k = p.datos?.motivo_tipo || "Otro"; motivos[k] = (motivos[k] || 0) + 1; });
     const maxM = Math.max(1, ...Object.values(motivos));
     const c = CARGAS[0]; let esc3 = null;
@@ -329,7 +373,7 @@ const V = {
       esc3 = base;
     }
     return `<h2>Vista inversores</h2><p class="sub">Cómo se decide qué traer y cuánto capital pide cada carga.</p>
-    <div class="stats"><div class="stat"><div class="n">${P.length}</div><div class="l">Analizados</div></div><div class="stat"><div class="n" style="color:var(--verde)">${P.filter(p => p.semaforo === "verde").length}</div><div class="l">Verdes</div></div><div class="stat"><div class="n" style="color:var(--rojo)">${desc.length}</div><div class="l">Descartados</div></div><div class="stat"><div class="n">${c ? money(c.totales?.inversion) : "—"}</div><div class="l">Última carga</div></div></div>
+    <div class="stats"><div class="stat"><div class="n">${P.length}</div><div class="l">Analizados</div></div><div class="stat"><div class="n" style="color:var(--verde)">${P.filter(p => evaluar(p).sem === "verde").length}</div><div class="l">Verdes</div></div><div class="stat"><div class="n" style="color:var(--rojo)">${desc.length}</div><div class="l">Descartados</div></div><div class="stat"><div class="n">${c ? money(c.totales?.inversion) : "—"}</div><div class="l">Última carga</div></div></div>
     <div class="two"><div class="panel"><h2 style="font-size:19px">Por qué se descarta</h2>${desc.length ? `<div class="dist">${Object.entries(motivos).map(([k, v]) => `<div><span>${esc(k)}</span><div class="bar"><i style="width:${v / maxM * 100}%;background:var(--rojo)"></i></div><span class="num">${v}</span></div>`).join("")}</div>` : '<p class="sub">Aún no hay descartados.</p>'}</div>
     <div class="panel"><h2 style="font-size:19px">Escenarios de la última carga</h2>${esc3 ? `<div class="kv"><span>Pesimista (vende 70%)</span><span>${money(esc3.p)}</span><span>Base (vende 85%)</span><span>${money(esc3.b)}</span><span>Optimista (vende 100%)</span><span>${money(esc3.o)}</span></div>` : '<p class="sub">Guarda una carga en el Armador para ver sus escenarios.</p>'}<p class="sub" style="margin-top:10px;font-size:13px">Según el método, 3 de cada 10 productos no rotan como se espera. Plan de salida: venta directa con campañas propias y luego remate en Black Friday.</p></div></div>`;
   },
@@ -340,16 +384,39 @@ const V = {
   }
 };
 
+const LECT = { libre: ["verde", "Libre"], intermedio: ["amarillo", "Intermedio"], saturado: ["rojo", "Saturado"] };
+const num = x => x == null || x === "" ? "—" : Number(x).toLocaleString("es-EC");
+function escaleraHTML(p) {
+  const d = p.datos || {}, det = d.paises_det;
+  const q = encodeURIComponent(p.nombre || "");
+  const links = `<p class="sub" style="font-size:13px;margin:10px 0 0">Ver: ${d.links?.dropkiller ? `<a href="${esc(d.links.dropkiller)}" target="_blank" rel="noopener">Dropkiller</a> · ` : ""}<a href="${esc(d.links?.tiktok || "https://www.tiktok.com/search?q=" + q)}" target="_blank" rel="noopener">videos en TikTok</a> · <a href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=EC&q=${q}&search_type=keyword_unordered" target="_blank" rel="noopener">anuncios en Ecuador</a>${d.link_origen ? ` · <a href="${esc(d.link_origen)}" target="_blank" rel="noopener">link propuesto</a>` : ""}</p>`;
+  if (!det) return `<div class="kv">${PAISES.map(([k, n]) => `<span>${n}</span><span>${esc((d.paises || {})[k] || "falta dato")}</span>`).join("")}</div><p class="warn" style="font-size:13px;margin-top:8px">Análisis con el formato anterior: pulsa Reanalizar para verlo como tabla y en dólares.</p>${links}`;
+  const cols = [...PAISES.map(([k, n]) => [n, det[k] || {}]), ...((det.otros || []).map(o => [o.pais || "Otro", o]))];
+  const row = (lab, f) => `<tr><th scope="row">${lab}</th>${cols.map(([, c]) => `<td class="num">${f(c)}</td>`).join("")}</tr>`;
+  return `<div class="tablewrap"><table class="esc"><thead><tr><th></th>${cols.map(([n]) => `<th>${esc(n)}</th>`).join("")}</tr></thead><tbody>
+   ${row("Ventas 7 días", c => num(c.ventas7))}${row("Ventas 30 días", c => num(c.ventas30))}${row("Proveedores", c => num(c.proveedores))}${row("Precio proveedor", c => c.precio_usd != null ? money(c.precio_usd) : "—")}${row("Anuncios activos", c => num(c.anuncios))}
+   <tr><th scope="row">Lectura</th>${cols.map(([, c]) => { const l = LECT[c.lectura]; return `<td>${l ? `<span class="pill ${l[0]}">${l[1]}</span>` : '<span class="ex">sin datos</span>'}</td>`; }).join("")}</tr>
+  </tbody></table></div>${cols.some(([, c]) => c.nota) ? `<ul class="sub" style="font-size:13px;margin:8px 0 0;padding-left:18px">${cols.filter(([, c]) => c.nota).map(([n, c]) => `<li><b>${esc(n)}:</b> ${esc(c.nota)}</li>`).join("")}</ul>` : ""}${links}`;
+}
+function decisionHTML(p, ev) {
+  const v = vals(p); const cls = { "Pedir": "verde", "Testear 1 caja": "amarillo", "Cotizar primero": "amarillo", "No pedir": "rojo", "En análisis": "gris" }[ev.decision];
+  const cambio = v.costoReal && (p.semaforo || "gris") !== ev.sem ? `<p style="margin:8px 0 0"><b>Con tu costo cotizado de ${money(v.costo)}</b> el producto pasó de ${S[p.semaforo]} a <span class="pill ${ev.sem}">${S[ev.sem]}</span>.</p>` : v.costoReal ? `<p style="margin:8px 0 0">Calculado con tu costo cotizado de <b>${money(v.costo)}</b>.</p>` : "";
+  return `<div class="decision ${cls}"><div class="row" style="flex-wrap:wrap;align-items:flex-start"><div><div class="ex">¿Qué hago con este producto?</div><div class="dtit">${esc(ev.decision)}</div></div>${ev.costoMax != null ? `<div class="cmax"><div class="ex">Costo puesto máximo</div><b>${money(ev.costoMax)}</b><div class="ex">por unidad para que valga la pena</div></div>` : ""}</div>
+   <ol class="dpasos">${ev.pasos.map(x => `<li>${esc(x)}</li>`).join("")}</ol>${cambio}</div>`;
+}
 function fichaV(p) {
-  const v = vals(p), sem = p.semaforo || "gris"; const t = Object.entries(v.pz);
+  const v = vals(p), ev = evaluar(p), sem = ev.sem; const t = Object.entries(ev.pz);
   return `<button class="back" data-back="1">← Volver al semáforo</button>
-  <div class="row" style="flex-wrap:wrap"><div><h2>${esc(p.nombre)}</h2><span class="pill ${sem}">${S[sem]}</span> <span class="tag">${esc(p.nicho || "")}</span> <span class="tag ${v.costoReal ? "real" : "est"}">Costo ${v.costoReal ? "REAL" : "ESTIMADO"}</span> ${p.confianza ? `<span class="tag">Confianza ${esc(p.confianza)}</span>` : ""}</div><div class="score" style="font-size:52px">${p.puntaje ?? "—"}</div></div>
+  <div class="row" style="flex-wrap:wrap"><div><h2>${esc(p.nombre)}</h2><span class="pill ${sem}">${S[sem]}</span> <span class="tag">${esc(p.nicho || "")}</span> <span class="tag ${v.costoReal ? "real" : "est"}">${v.costo == null ? "SIN COSTO" : "Costo " + (v.costoReal ? "REAL" : "ESTIMADO")}</span> ${p.confianza ? `<span class="tag">Confianza ${esc(p.confianza)}</span>` : ""}</div><div style="text-align:right"><div class="score" style="font-size:52px">${ev.pts ?? "—"}</div><div class="ex">Analizado ${fmtCorto(new Date(p.actualizado || p.creado))}</div><button class="chipbtn" data-rean="${p.id}" style="margin-top:6px">Reanalizar</button></div></div>
   <p style="max-width:65ch">${esc(p.motivo || "")}</p>
-  <div class="two"><div class="panel"><h2 style="font-size:19px">Escalera de países</h2><div class="kv">${[["CO", "Colombia"], ["EC", "Ecuador"], ["MX", "México"]].map(([k, n]) => `<span>${n}</span><span>${esc(v.paises[k] || "falta dato")}</span>`).join("")}</div>
-   ${t.length ? `<h2 style="font-size:19px;margin-top:14px">Puntaje</h2><div class="dist">${t.map(([k, x]) => { const m = PZ_MAX[k] || 10; return `<div class="score-bar"><span>${PZ_TXT[k] || esc(k)}</span><div class="bar"><i style="width:${Math.min(100, x / m * 100)}%"></i></div><span class="num">${x}/${m}</span></div>`; }).join("")}</div>` : ""}
+  <div id="rmsg" class="sub" style="margin:0"></div>
+  ${decisionHTML(p, ev)}
+  <div class="panel" style="margin:14px 0"><h2 style="font-size:19px">Escalera de países</h2><p class="sub" style="font-size:13px;margin:0 0 8px">Lo ideal: ventas fuertes en Colombia y Ecuador todavía libre. Todo en dólares.</p>${escaleraHTML(p)}</div>
+  <div class="two"><div class="panel">
+   ${t.length ? `<h2 style="font-size:19px">Puntaje</h2><div class="dist">${t.map(([k, x]) => { const m = PZ_MAX[k] || 10; return x == null ? `<div class="score-bar"><span>${PZ_TXT[k] || esc(k)}</span><div class="bar"></div><span class="num ex">sin dato</span></div>` : `<div class="score-bar"><span>${PZ_TXT[k] || esc(k)}</span><div class="bar"><i style="width:${Math.min(100, x / m * 100)}%"></i></div><span class="num">${x}/${m}</span></div>`; }).join("")}</div><p class="sub" style="font-size:12px;margin:8px 0 0">Los criterios sin dato no cuentan: el puntaje se calcula solo con lo que se sabe. La ganancia se recalcula con el costo actual.</p>` : ""}
    ${v.falta.length ? `<p class="warn" style="margin-top:12px">Falta: ${v.falta.map(esc).join(" · ")}</p>` : ""}
    ${v.fuentes.length ? `<p class="sub" style="margin-top:10px;font-size:13px">Fuentes: ${v.fuentes.map(f => f.url ? `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nombre || "link")}</a>` : esc(f.nombre || f)).join(" · ")}</p>` : ""}
-   <h2 style="font-size:19px;margin-top:14px">Tu cotización</h2><form class="form" id="fq"><div class="calc"><div><label for="q-costo">Costo cotizado por unidad</label><input id="q-costo" type="number" step="0.01" value="${p.costo_cotizado ?? ""}" placeholder="${v.costo ?? ""}"></div><div><label for="q-pz">Piezas por caja</label><input id="q-pz" type="number" value="${p.piezas_por_caja_cotizado ?? ""}" placeholder="${p.datos?.piezas ?? ""}"></div><div><label for="q-cbm">CBM por caja</label><input id="q-cbm" type="number" step="0.001" value="${p.cbm_cotizado ?? ""}" placeholder="${p.datos?.cbm ?? ""}"></div><div><label for="q-est">Estado</label><select id="q-est">${ESTADOS.map(e => `<option value="${e}" ${e === (p.estado || "analizado") ? "selected" : ""}>${EST_TXT[e]}</option>`).join("")}</select></div></div>
+   <h2 style="font-size:19px;margin-top:14px">Tu cotización</h2><p class="sub" style="font-size:13px;margin:0 0 8px">Cuando Imporfactory o el proveedor te den el precio, escribe el <b>costo puesto por unidad</b> (producto + flete + impuestos + agente), las piezas por caja y el CBM. Al guardar, la app recalcula la ganancia, el puntaje y la decisión.${evaluar(p).costoMax != null ? ` Para que convenga, el costo debe ser de <b>${money(evaluar(p).costoMax)}</b> o menos.` : ""}</p><form class="form" id="fq"><div class="calc"><div><label for="q-costo">Costo cotizado por unidad</label><input id="q-costo" type="number" step="0.01" value="${p.costo_cotizado ?? ""}" placeholder="${v.costo ?? ""}"></div><div><label for="q-pz">Piezas por caja</label><input id="q-pz" type="number" value="${p.piezas_por_caja_cotizado ?? ""}" placeholder="${p.datos?.piezas ?? ""}"></div><div><label for="q-cbm">CBM por caja</label><input id="q-cbm" type="number" step="0.001" value="${p.cbm_cotizado ?? ""}" placeholder="${p.datos?.cbm ?? ""}"></div><div><label for="q-est">Estado</label><select id="q-est">${ESTADOS.map(e => `<option value="${e}" ${e === (p.estado || "analizado") ? "selected" : ""}>${EST_TXT[e]}</option>`).join("")}</select></div></div>
    <div><label for="q-nota">Nota</label><input id="q-nota" value="${esc(p.nota || "")}" placeholder="Ej: proveedor Yiwu, muestra pedida"></div><button class="btn ghost" type="submit">Guardar cotización</button><div id="qmsg" class="sub" style="margin:0"></div></form></div>
   ${v.costo && v.piezas ? `<div class="panel"><h2 style="font-size:19px">Calculadora</h2><div class="calc" id="calcin">
    <div><label for="c-precio">Precio al cliente</label><input id="c-precio" type="number" step="0.01" value="${v.precio ?? ""}"></div>
@@ -393,8 +460,9 @@ function render() {
 const msg = (id, t, bad) => { const el = document.getElementById(id); if (el) { el.textContent = t; el.style.color = bad ? "var(--rojo)" : "var(--verde)"; } };
 
 document.getElementById("view").onclick = async e => {
-  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar]"); if (!t) return; const d = t.dataset;
+  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean]"); if (!t) return; const d = t.dataset;
   if (d.recargar) return cargar();
+  if (d.rean) { const p = P.find(x => x.id === d.rean); const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Reanálisis", comentario: "Reanalizar: " + p.nombre, producto_id: p.id }); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Listo: quedó en cola para reanalizar a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
   if (d.cm) { calMes = new Date(calMes.getFullYear(), calMes.getMonth() + +d.cm, 1); return render(); }
   if (d.delt) return guardarTemporadas(RAW_T.filter(x => String(x.id) !== d.delt));
   if (d.delc) { const r = await db.from("cargas").delete().eq("id", d.delc); if (r.error) return alertErr(r.error); return cargar(); }
@@ -403,6 +471,18 @@ document.getElementById("view").onclick = async e => {
   else if (d.cap) cfg.capital = +d.cap; else if (d.a) cajas[d.a] = (cajas[d.a] || 0) + 1; else if (d.m) cajas[d.m] = Math.max(0, (cajas[d.m] || 0) - 1);
   render(); if (d.f || d.back) window.scrollTo({ top: 0 });
 };
+async function moverEstado(id, estado) {
+  const p = P.find(x => x.id === id); if (!p || !estado || p.estado === estado) return;
+  const r = await db.from("productos").update({ estado, actualizado: new Date().toISOString() }).eq("id", id);
+  if (r.error) return msg("pmsg", "No se pudo mover: " + r.error.message, true);
+  p.estado = estado; render(); msg("pmsg", `${p.nombre} → ${EST_TXT[estado]}`);
+}
+document.getElementById("view").addEventListener("change", e => { const m = e.target.dataset.mover; if (m) moverEstado(m, e.target.value); });
+document.getElementById("view").addEventListener("dragstart", e => { const id = e.target.dataset?.pid; if (id) { e.dataTransfer.setData("text/plain", id); e.target.classList.add("drag"); } });
+document.getElementById("view").addEventListener("dragend", e => e.target.classList?.remove("drag"));
+document.getElementById("view").addEventListener("dragover", e => { const c = e.target.closest?.("[data-col]"); if (c && c.dataset.col !== "en_cola") { e.preventDefault(); c.classList.add("over"); } });
+document.getElementById("view").addEventListener("dragleave", e => { const c = e.target.closest?.("[data-col]"); if (c) c.classList.remove("over"); });
+document.getElementById("view").addEventListener("drop", e => { const c = e.target.closest?.("[data-col]"); if (!c) return; e.preventDefault(); c.classList.remove("over"); moverEstado(e.dataTransfer.getData("text/plain"), c.dataset.col); });
 function alertErr(e) { document.getElementById("view").insertAdjacentHTML("afterbegin", `<p class="warn">Error: ${esc(e.message || e)}</p>`); }
 
 async function guardarTemporadas(lista) {

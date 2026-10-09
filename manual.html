@@ -116,7 +116,7 @@ details.help summary{cursor:pointer;font-weight:600}
 details.help dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 12px;margin:10px 0 0}
 details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
-</style>
+.kbd{white-space:normal!important;overflow-wrap:anywhere}</style>
 <style>.ev{white-space:normal!important;overflow:visible!important}.ev.salida{background:var(--ink);color:var(--bg)}.ev.lis{background:var(--verde)}</style>
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head><body>
@@ -171,6 +171,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
   <div class="grp">Empezar</div>
   <a href="#que-es">Qué es y para qué sirve</a>
   <a href="#como-funciona">Cómo funciona</a>
+  <a href="#como-se-analiza">Cómo se analiza un producto</a>
   <div class="grp">Pestañas</div>
   <a href="#inicio">Inicio</a>
   <a href="#proponer">Proponer producto</a>
@@ -224,6 +225,48 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
 <div class="note">Ver la app no necesita la PC de Juank. Analizar productos sí: las propuestas esperan en cola hasta las 8 pm, cuando se analizan solas si la PC está prendida.</div>
 </section>
 
+<section class="msec" id="como-se-analiza"><h2>Cómo se analiza un producto</h2>
+<p>Un producto puede <b>entrar de 3 formas</b>, pero se <b>analiza de 2 maneras</b>: normal (productos que se venden todo el año) o por temporada (productos de una fecha: Navidad, San Valentín, Época fit…). Cómo entra no cambia el análisis; lo cambia qué tipo de producto es, y eso lo eliges tú.</p>
+<div class="tablewrap"><table><thead><tr><th>Cómo entra</th><th>Dónde o con qué comando</th><th>Tipo de análisis</th><th>Qué te entrega</th><th>Cuándo usarlo</th></tr></thead><tbody>
+ <tr><td style="white-space:normal"><b>Foto o link</b> (tú o un inversor)</td><td style="white-space:normal">App → pestaña <b>Proponer</b> → "¿Cómo lo analizo?". Se analiza a las 8 pm o con <span class="kbd">/analizar-cola</span>. También <span class="kbd">/analizar &lt;link o nombre&gt;</span> en la terminal (agrega <span class="kbd">temporada San Valentín</span> al final para el análisis por temporada)</td><td style="white-space:normal"><b>Tú eliges</b>: normal o por temporada (y cuál temporada)</td><td style="white-space:normal">Una ficha en el Semáforo con color, puntaje, decisión y conclusión</td><td style="white-space:normal">Viste algo en redes y quieres saber si sirve</td></tr>
+ <tr><td style="white-space:normal"><b>Radar</b> (busca solo)</td><td style="white-space:normal"><span class="kbd">/radar</span> en la terminal</td><td style="white-space:normal">Siempre <b>normal</b>. Lo de temporada que ya no llega se filtra antes de buscar</td><td style="white-space:normal">Los productos que se están vendiendo fuerte hoy, con su ficha</td><td style="white-space:normal">Cuando quieres ideas nuevas de productos de todo el año</td></tr>
+ <tr><td style="white-space:normal"><b>Radar de temporada</b> (busca solo)</td><td style="white-space:normal"><span class="kbd">/radar-temporada</span> o <span class="kbd">/radar-temporada Época fit</span></td><td style="white-space:normal">Siempre <b>por temporada</b>, con la lista "Qué buscar" del Calendario</td><td style="white-space:normal">Todos los productos que vendieron en esas fechas el año pasado, con su curva y cajas techo, más un informe</td><td style="white-space:normal">Una vez por temporada, antes de la fecha límite para pedir</td></tr>
+</tbody></table></div>
+
+<h3>Análisis normal: qué mira</h3>
+<p>Es para productos que se venden todo el año. Mira <b>cómo se vende hoy</b>.</p>
+<div class="tablewrap"><table><thead><tr><th>Variable</th><th>Puntos</th><th>Qué significa</th><th>De dónde sale</th></tr></thead><tbody>
+ <tr><td>Escalera de países</td><td class="num">25</td><td style="white-space:normal">Vende fuerte en Colombia (mercado más maduro) y poco en Ecuador: hay espacio para entrar</td><td style="white-space:normal">Ventas 7 y 30 días en Dropkiller por país</td></tr>
+ <tr><td>Saturación Ecuador</td><td class="num">20</td><td style="white-space:normal">Cuántos proveedores y anuncios tiene en Ecuador comparado con los demás productos analizados</td><td style="white-space:normal">Dropkiller (proveedores y anuncios)</td></tr>
+ <tr><td>Videos</td><td class="num">15</td><td style="white-space:normal">Videos con 10.000+ "me gusta", sobre todo recientes</td><td style="white-space:normal">TikTok</td></tr>
+ <tr><td>Ganancia</td><td class="num">15</td><td style="white-space:normal">Cuánto queda para anuncios después de costo, envío y devoluciones</td><td style="white-space:normal">Tu costo (o Imporfactory) y el precio al cliente</td></tr>
+ <tr><td>Etapa y durabilidad</td><td class="num">10</td><td style="white-space:normal">Si recién arranca o ya está maduro; si es moda pasajera o estable</td><td style="white-space:normal">Ventas y videos</td></tr>
+ <tr><td>Utilidad y valor</td><td class="num">10</td><td style="white-space:normal">Resuelve un problema o deseo y parece valer más de lo que cuesta</td><td style="white-space:normal">Criterio del radar</td></tr>
+ <tr><td>Rotación</td><td class="num">5</td><td style="white-space:normal">Qué tan rápido se vendería la caja</td><td style="white-space:normal">Ventas actuales</td></tr>
+</tbody></table></div>
+
+<h3>Análisis por temporada: qué mira</h3>
+<p>Es para productos de una fecha. No mira cómo se vende hoy, sino <b>cuánto vendió en las fechas de esa temporada el año pasado</b> (no en el mes en que lo propones: si en octubre propones luces y eliges Navidad, mira la Navidad pasada).</p>
+<div class="tablewrap"><table><thead><tr><th>Variable</th><th>Puntos</th><th>Qué significa</th><th>De dónde sale</th></tr></thead><tbody>
+ <tr><td>Demanda en la temporada</td><td class="num">30</td><td style="white-space:normal">Unidades vendidas dentro de las fechas, comparadas con los demás productos de esa temporada</td><td style="white-space:normal">Historial diario de Dropkiller</td></tr>
+ <tr><td>Se repite cada año</td><td class="num">15</td><td style="white-space:normal">También vendió en la temporada de hace dos años</td><td style="white-space:normal">Historial de Dropkiller</td></tr>
+ <tr><td>Llega a tiempo</td><td class="num">15</td><td style="white-space:normal">La carga llega antes de que arranque la ola (o al menos con 21 días de venta)</td><td style="white-space:normal">Fechas de la carga y de la curva</td></tr>
+ <tr><td>Ganancia</td><td class="num">15</td><td style="white-space:normal">Igual que en el normal</td><td style="white-space:normal">Tu costo y el precio</td></tr>
+ <tr><td>Qué tan de temporada es</td><td class="num">10</td><td style="white-space:normal">Qué % de sus ventas cayó dentro de las fechas</td><td style="white-space:normal">Curva</td></tr>
+ <tr><td>Utilidad y valor</td><td class="num">10</td><td style="white-space:normal">Igual que en el normal</td><td style="white-space:normal">Criterio del radar</td></tr>
+ <tr><td>Precio estable</td><td class="num">5</td><td style="white-space:normal">Si el precio aguantó después del pico</td><td style="white-space:normal">Curva</td></tr>
+</tbody></table></div>
+<p>La saturación no resta en temporada: en esas fechas todos venden a la vez. La competencia se refleja en el <b>techo de cajas</b>, que sale de lo que vendió el vendedor <b>más débil</b>: si hay demasiados vendedores, el más débil vendió poco y el techo sale bajo. Además, un producto solo cuenta para la temporada si su <b>semana de más ventas cae dentro de las fechas</b> (ver Reglas completas, parte 15).</p>
+
+<h3>En los dos análisis</h3>
+<ul>
+ <li>El color: 70 o más verde, 50 a 69 amarillo, menos de 50 rojo. Sin costo, máximo amarillo.</li>
+ <li>Los eliminatorios (no da en venta directa, llega tarde, etc.) ponen rojo aunque el puntaje sea alto.</li>
+ <li>El permiso (cosméticos, suplementos…) es solo una <b>etiqueta</b> morada, no un tercer tipo de análisis.</li>
+ <li>Detalle de cada regla: <a href="#reglas">Reglas completas</a>.</li>
+</ul>
+</section>
+
 <section class="msec" id="inicio"><h2>Inicio</h2>
 <p>El resumen del día.</p>
 <ul>
@@ -239,6 +282,7 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Abre la pestaña <b>Proponer</b>.</li>
  <li>Pega el <b>link</b> del video o del producto, o sube una <b>foto o captura</b>. Desde el celular puedes tomar la foto directo. Basta con uno de los dos.</li>
  <li>Escribe <b>tu nombre</b>, para que se sepa quién lo propuso.</li>
+ <li>En <b>¿Cómo lo analizo?</b> elige <b>Análisis normal</b> (se vende todo el año) o <b>Análisis por temporada</b> y la temporada (por ejemplo, San Valentín). Si no estás seguro, normal. La diferencia está en <a href="#como-se-analiza">Cómo se analiza un producto</a>.</li>
  <li>Agrega un <b>comentario</b> si quieres. Ejemplo: "muchos comentarios de ¿cuánto cuesta?".</li>
  <li>Pulsa <b>Enviar a la cola</b>. Aparece en la lista "En cola".</li>
 </ol>
@@ -545,15 +589,16 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Siempre es baja si el producto quedó "sin datos suficientes".</li>
 </ul>
 
-<h3>14. Tres tipos de producto</h3>
-<div class="tablewrap"><table><thead><tr><th></th><th>Producto de siempre</th><th>Producto de temporada</th><th>Producto con permiso</th></tr></thead><tbody>
- <tr><th scope="row">Ejemplo</th><td style="white-space:normal">Pelador de cocina, brasier, cinta tapa goteras</td><td style="white-space:normal">Luces navideñas, regalos del Día de la Madre</td><td style="white-space:normal">Sérum, suplementos, gotas</td></tr>
- <tr><th scope="row">Cómo entra</th><td style="white-space:normal">/radar y propuestas</td><td style="white-space:normal">/radar-temporada (en /radar se filtra si no llega)</td><td style="white-space:normal">/radar y propuestas</td></tr>
- <tr><th scope="row">Qué importa</th><td style="white-space:normal">Escalera de países, saturación en Ecuador, videos, margen</td><td style="white-space:normal">Cuánto vendió la temporada pasada, cuándo arrancó, si llegas a tiempo y cuánto bajó el precio</td><td style="white-space:normal">Lo mismo que el de siempre, más confirmar el permiso</td></tr>
- <tr><th scope="row">Saturación</th><td style="white-space:normal">Resta puntos</td><td style="white-space:normal"><b>No resta</b>: en temporada todos venden a la vez; lo que importa es llegar a tiempo</td><td style="white-space:normal">Resta puntos</td></tr>
- <tr><th scope="row">Cuántas cajas</th><td style="white-space:normal">Amarillo: 1 caja de prueba. Verde: según capital (máx. 30% por producto)</td><td style="white-space:normal">Techo = lo que vendió el vendedor más débil ÷ piezas por caja, sin pasar el 30% del capital</td><td style="white-space:normal">Ninguna hasta confirmar el permiso</td></tr>
- <tr><th scope="row">Rojo si</th><td style="white-space:normal">Eliminatorio o puntaje &lt; 50 con datos</td><td style="white-space:normal">No llega con 21 días de venta</td><td style="white-space:normal">Igual que el de siempre</td></tr>
+<h3>14. Normal vs temporada (y el permiso aparte)</h3>
+<div class="tablewrap"><table><thead><tr><th></th><th>Análisis normal</th><th>Análisis por temporada</th></tr></thead><tbody>
+ <tr><th scope="row">Ejemplo</th><td style="white-space:normal">Pelador de cocina, brasier, cinta tapa goteras</td><td style="white-space:normal">Luces navideñas, regalos del Día de la Madre, almohada cervical en Época fit</td></tr>
+ <tr><th scope="row">Cómo entra</th><td style="white-space:normal">/radar, o propuesta con "Análisis normal"</td><td style="white-space:normal">/radar-temporada, o propuesta con "Análisis por temporada"</td></tr>
+ <tr><th scope="row">Qué importa</th><td style="white-space:normal">Escalera de países, saturación en Ecuador, videos, margen</td><td style="white-space:normal">Cuánto vendió en esas fechas el año pasado, si se repite, si llegas a tiempo y si aguantó el precio</td></tr>
+ <tr><th scope="row">Saturación</th><td style="white-space:normal">Resta puntos</td><td style="white-space:normal">No resta: la competencia se refleja en el techo de cajas (vendedor más débil)</td></tr>
+ <tr><th scope="row">Cuántas cajas</th><td style="white-space:normal">Amarillo: 1 caja de prueba. Verde: según capital (máx. 30% por producto)</td><td style="white-space:normal">Techo = lo que vendió el vendedor más débil ÷ piezas por caja, sin pasar el 30% del capital</td></tr>
+ <tr><th scope="row">Rojo si</th><td style="white-space:normal">Eliminatorio o puntaje &lt; 50 con datos</td><td style="white-space:normal">No llega con 21 días de venta, eliminatorio, o puntaje &lt; 50</td></tr>
 </tbody></table></div>
+<p><b>Permiso:</b> cualquiera de los dos puede llevar la etiqueta morada REQUIERE PERMISO (cosméticos, suplementos, alimentos, dispositivos médicos). No cambia el análisis; solo hay que confirmar el permiso antes de pedir (parte 10).</p>
 
 <h3>15. Radar de temporada en detalle</h3>
 <ul>

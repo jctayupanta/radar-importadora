@@ -385,6 +385,8 @@ function temporadaPanel() {
   ${editTemp ? `<form class="form" id="fte" style="margin-top:10px"><label for="te-txt">Una categoría por línea: <span class="kbd">Categoría: palabra, palabra, palabra</span></label><textarea id="te-txt" rows="14">${esc(textoLista(t))}</textarea><div style="display:flex;gap:8px"><button class="btn" type="submit">Guardar lista</button><button class="btn ghost" type="button" data-edtemp="0">Cancelar</button></div><div id="temsg" class="sub" style="margin:0"></div></form>` : `<div style="margin-top:10px">${listaHTML(t)}</div>`}
   <p class="sub" style="font-size:12px;margin:10px 0 0">✓ = probada: con esa palabra se encontraron en Dropkiller productos que vendieron en esta temporada el año pasado (pasa el mouse para ver cuánto). Para usarla: <span class="kbd">/radar-temporada ${esc(t.nombre)}</span></p></div>`;
 }
+function prefijoDe(p) { const n = p.datos?.temporada?.nombre; const t = n && RAW_T.find(x => x.nombre === n); return t ? `[Análisis: temporada | ${t.id} | ${t.nombre}]` : "[Análisis: normal]"; }
+function tipoAnalisis(com) { const m = /^\[Análisis: (normal|temporada)(?: \| [^|]* \| ([^\]]*))?\]/.exec(com || ""); return !m ? "análisis normal" : m[1] === "normal" ? "análisis normal" : "por temporada: " + m[2]; }
 const vacio = (t) => `<div class="panel"><p class="sub" style="margin:0">${t}</p></div>`;
 
 const V = {
@@ -411,9 +413,12 @@ const V = {
      <div><label for="f-link">Link del producto o video</label><input id="f-link" placeholder="https://www.tiktok.com/..."></div>
      <div><label for="f-foto">Foto o captura</label><div class="drop"><input id="f-foto" type="file" accept="image/*"><div style="font-size:13px;margin-top:6px">Desde el celular puedes tomar la foto directo</div></div></div>
      <div><label for="f-quien">Quién lo propone</label><input id="f-quien" required placeholder="Tu nombre"></div>
+     <div><label for="f-tipo">¿Cómo lo analizo?</label><select id="f-tipo"><option value="normal">Análisis normal: se vende todo el año</option><option value="temporada">Análisis por temporada</option></select>
+      <div id="f-temp-box" hidden style="margin-top:8px"><label for="f-temp">¿De qué temporada?</label><select id="f-temp">${RAW_T.map(t => `<option value="${esc(t.id)}">${esc(t.nombre)}</option>`).join("")}</select></div>
+      <p class="sub" style="font-size:12px;margin:6px 0 0">Normal: mira cómo se vende hoy en Colombia, Ecuador y México (escalera, competencia, videos, ganancia). Temporada: mira cuánto vendió en esas fechas el año pasado y si la carga llega a tiempo. Ver Manual → "Cómo se analiza un producto".</p></div>
      <div><label for="f-com">Comentario (opcional)</label><textarea id="f-com" rows="2" placeholder="Lo vi con muchos comentarios de ¿cuánto cuesta?"></textarea></div>
      <button class="btn" type="submit" id="f-btn">Enviar a la cola</button><div id="fmsg" class="sub" style="margin:0"></div></form>
-     <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => `<div class="alert"><span class="pill gris">Cola</span><div><b>${esc(x.link || "Foto")}</b><br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))}</span></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}</div></div>`;
+     <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => `<div class="alert"><span class="pill gris">Cola</span><div><b>${esc(x.link || "Foto")}</b><br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))} · ${esc(tipoAnalisis(x.comentario))}</span></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}</div></div>`;
   },
   semaforo() {
     const N = P.filter(p => tipoLista(p) === "normal"), C = P.filter(p => tipoLista(p) === "compacto"), A = P.filter(p => tipoLista(p) === "archivado");
@@ -611,10 +616,10 @@ document.getElementById("view").onclick = async e => {
   const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean],[data-permok],[data-permno],[data-vert],[data-edtemp]"); if (!t) return; const d = t.dataset;
   if (d.vert !== undefined) { verTemp = d.vert || null; editTemp = false; render(); if (verTemp) document.getElementById("tpanel")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (d.edtemp !== undefined) { editTemp = d.edtemp === "1"; return render(); }
-  if (d.permok) { const p = P.find(x => x.id === d.permok); t.disabled = true; const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Permiso resuelto", comentario: "Sí puedo traerlo: " + p.nombre, producto_id: p.id }); if (r.error) { t.disabled = false; return msg("rmsg", "No se pudo: " + r.error.message, true); } msg("rmsg", "Listo: se hace el análisis completo a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
+  if (d.permok) { const p = P.find(x => x.id === d.permok); t.disabled = true; const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Permiso resuelto", comentario: prefijoDe(p) + " Sí puedo traerlo: " + p.nombre, producto_id: p.id }); if (r.error) { t.disabled = false; return msg("rmsg", "No se pudo: " + r.error.message, true); } msg("rmsg", "Listo: se hace el análisis completo a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
   if (d.permno) { const p = P.find(x => x.id === d.permno); const r = await db.from("productos").update({ estado: "descartado", nota: p.nota || "Descartado: requiere permiso", actualizado: new Date().toISOString() }).eq("id", p.id); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Descartado. Queda en Descartes rápidos por si cambias de opinión."); return setTimeout(cargar, 700); }
   if (d.recargar) return cargar();
-  if (d.rean) { const p = P.find(x => x.id === d.rean); const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Reanálisis", comentario: "Reanalizar: " + p.nombre, producto_id: p.id }); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Listo: quedó en cola para reanalizar a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
+  if (d.rean) { const p = P.find(x => x.id === d.rean); const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Reanálisis", comentario: prefijoDe(p) + " Reanalizar: " + p.nombre, producto_id: p.id }); if (r.error) return msg("rmsg", "No se pudo: " + r.error.message, true); msg("rmsg", "Listo: quedó en cola para reanalizar a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
   if (d.cm) { calMes = new Date(calMes.getFullYear(), calMes.getMonth() + +d.cm, 1); return render(); }
   if (d.delt) return guardarTemporadas(RAW_T.filter(x => String(x.id) !== d.delt));
   if (d.delc) { const r = await db.from("cargas").delete().eq("id", d.delc); if (r.error) return alertErr(r.error); return cargar(); }
@@ -629,7 +634,7 @@ async function moverEstado(id, estado) {
   if (r.error) return msg("pmsg", "No se pudo mover: " + r.error.message, true);
   p.estado = estado; render(); msg("pmsg", `${p.nombre} → ${EST_TXT[estado]}`);
 }
-document.getElementById("view").addEventListener("change", e => { const m = e.target.dataset.mover; if (m) moverEstado(m, e.target.value); });
+document.getElementById("view").addEventListener("change", e => { const m = e.target.dataset.mover; if (m) moverEstado(m, e.target.value); if (e.target.id === "f-tipo") document.getElementById("f-temp-box").hidden = e.target.value !== "temporada"; });
 document.getElementById("view").addEventListener("dragstart", e => { const id = e.target.dataset?.pid; if (id) { e.dataTransfer.setData("text/plain", id); e.target.classList.add("drag"); } });
 document.getElementById("view").addEventListener("dragend", e => e.target.classList?.remove("drag"));
 document.getElementById("view").addEventListener("dragover", e => { const c = e.target.closest?.("[data-col]"); if (c && c.dataset.col !== "en_cola") { e.preventDefault(); c.classList.add("over"); } });
@@ -665,7 +670,9 @@ document.getElementById("view").addEventListener("submit", async e => {
       if (up.error) { btn.disabled = false; return msg("fmsg", "No se pudo subir la foto: " + up.error.message, true); }
       foto_url = db.storage.from("fotos").getPublicUrl(path).data.publicUrl;
     }
-    const r = await db.from("propuestas").insert({ link: link || null, foto_url, propuesto_por: quien || null, comentario: com || null });
+    const tipo = val("f-tipo"); const tt = tipo === "temporada" ? RAW_T.find(t => String(t.id) === val("f-temp")) : null;
+    const pref = tt ? `[Análisis: temporada | ${tt.id} | ${tt.nombre}]` : "[Análisis: normal]";
+    const r = await db.from("propuestas").insert({ link: link || null, foto_url, propuesto_por: quien || null, comentario: (pref + " " + (com || "")).trim() });
     btn.disabled = false;
     if (r.error) return msg("fmsg", "No se pudo enviar: " + r.error.message, true);
     msg("fmsg", "Listo, quedó en cola. Se analiza a las 8 pm."); e.target.reset(); setTimeout(cargar, 900);

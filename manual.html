@@ -399,8 +399,14 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li>Busca en Dropkiller cada palabra de la lista de esa temporada, en Colombia, Ecuador y México.</li>
  <li>Si aparecen productos parecidos vendiendo fuerte, los busca también (hasta 3 palabras nuevas por categoría).</li>
  <li>Mira el historial del año pasado de <b>todos</b> los productos encontrados que ya existían en esa época.</li>
- <li><b>Regla de pertenencia:</b> un producto es de la temporada solo si su <b>semana de más ventas cae dentro de las fechas</b> de la temporada. Si no, va a la lista "Vende en otra época" con su mes más fuerte. Ejemplo: una libreta de ahorro que vende casi todo en diciembre es de Navidad, no de Época fit.</li>
- <li>Guarda en el Semáforo (filtro "Temporada") <b>todos</b> los que pertenecen, sin tope, con su curva. Marca con ✓ en el Calendario las palabras que dieron productos que pertenecen.</li>
+ <li><b>Regla de pertenencia:</b> un producto es de la temporada solo si su <b>semana de más ventas cae dentro de las fechas</b> de la temporada. Si no, va a la lista "Vende en otra época" con su mes más fuerte.
+  <ul>
+   <li><b>La regla no pregunta si el producto "es fit", pregunta cuándo se vende.</b> La faja reductora es un producto fit, pero el año pasado su pico fue en diciembre en Colombia (la gente se arregla para las fiestas) y a fines de marzo en Ecuador y México. Si la pides para el 1 de enero, llega cuando la demanda está bajando. No queda descartada del negocio: puede entrar por el radar normal o por la temporada de Navidad.</li>
+   <li>Libreta de ahorro: pico el 24 de diciembre → es de Navidad. Tabla de flexiones: pico el 30 de noviembre → es de Black Friday.</li>
+  </ul></li>
+ <li><b>Pico resistente:</b> el pico se calcula con la <b>mediana de 7 días</b>, no con la suma. Así un solo día raro (por ejemplo, un vendedor que vació su stock y aparecen 400 ventas de golpe) no mueve la fecha del pico. Si el pico por suma y el pico por mediana quedan a más de 7 días de distancia, la ficha muestra <b>⚠ pico dudoso</b>: míralo con cuidado antes de pedir.</li>
+ <li>Guarda en el Semáforo (filtro "Temporada") <b>todos</b> los que pertenecen, sin tope, con su curva. Marca con ✓ en el Calendario las palabras que dieron productos que pertenecen. <b>Cada corrida reemplaza las ✓</b>: si una palabra ya no cumple, pierde su ✓ (la palabra se queda en tu lista).</li>
+ <li>Los califica con el <b>puntaje de temporada</b> (abajo).</li>
  <li>Deja un informe completo en la carpeta <span class="kbd">logs</span> (temporada-…md) con la tabla de todos los productos, los que venden en otra época y qué categorías no tuvieron ventas.</li>
 </ol>
 <p><b>Temporadas que trae la app:</b> Época fit / Año nuevo (1 ene – 15 mar), Carnaval (cambia cada año; 2027: 20 ene – 9 feb), San Valentín (25 ene – 14 feb), Regreso a clases Costa (15 mar – 5 may), Día de la Madre, Día del Niño (10 may – 1 jun), Día del Padre, Regreso a clases Sierra (15 ago – 10 sep), Black Friday, Navidad (15 nov – 24 dic) y Año Viejo (20 – 31 dic).</p>
@@ -561,6 +567,19 @@ details.help dt{font-weight:600}details.help dd{margin:0;color:var(--muted)}
  <li><b>¿Llegas?</b>: compara la fecha en que estaría lista la próxima carga con el inicio de la ola de este año (misma fecha del año pasado).</li>
  <li>Límites: no existe historial de cuántos proveedores había cada semana, el stock histórico no es confiable y la curva empieza cuando Dropkiller empezó a seguir el producto.</li>
 </ul>
+
+<h3>15b. Puntaje de los productos de temporada</h3>
+<p>Un producto de temporada no se califica como uno de todo el año. En temporada no importa que ya se venda en Ecuador ni que haya competencia: todos venden a la vez. Lo que importa es <b>cuánto vendió el año pasado en esas fechas y si llegas a tiempo</b>.</p>
+<div class="tablewrap"><table><thead><tr><th>Criterio</th><th>Máx.</th><th>Cómo se calcula</th></tr></thead><tbody>
+ <tr><td>Demanda en la temporada</td><td class="num">30</td><td style="white-space:normal">Unidades vendidas <b>dentro</b> de las fechas de la temporada pasada, comparadas con los demás productos de la misma temporada. Si vendió más que el 90% de ellos, saca 27. Hacen falta al menos 5 productos para comparar.</td></tr>
+ <tr><td>Se repite cada año</td><td class="num">15</td><td style="white-space:normal">15 si también vendió en la temporada de hace dos años; 0 si no; sin dato si no existía todavía en Dropkiller.</td></tr>
+ <tr><td>Llega a tiempo</td><td class="num">15</td><td style="white-space:normal">15 si la carga llega antes de que arranque la ola (fecha del 10% de ventas del año pasado); 8 si llega después del arranque pero con 21 días o más de venta. Si no alcanza 21 días, es rojo por "Llega tarde".</td></tr>
+ <tr><td>Ganancia</td><td class="num">15</td><td style="white-space:normal">Igual que en el radar normal: la calcula la app con tu costo (estimado o cotizado).</td></tr>
+ <tr><td>Qué tan de temporada es</td><td class="num">10</td><td style="white-space:normal">% de sus ventas del periodo revisado que cayó dentro de la temporada. Ejemplo: 70% → 7 puntos.</td></tr>
+ <tr><td>Utilidad y valor</td><td class="num">10</td><td style="white-space:normal">Criterio del radar, igual que en el normal.</td></tr>
+ <tr><td>Precio estable</td><td class="num">5</td><td style="white-space:normal">Cuánto aguantó el precio después del pico: sin caída = 5; si cayó 20% = 4.</td></tr>
+</tbody></table></div>
+<p>El color sale igual que siempre: 70 o más verde, 50 a 69 amarillo, menos de 50 rojo, y sin costo máximo amarillo. Ejemplo: almohada cervical con demanda 26/30, se repite 15/15, llega 15/15, concentración 6/10, precio 5/5 y utilidad 7/10 → 74 de 85 posibles (sin ganancia) = <b>87, verde</b>, que pasa a amarillo hasta que la cotices.</p>
 
 <h3>16. Armador, escenarios y archivo</h3>
 <ul>

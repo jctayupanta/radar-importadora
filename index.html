@@ -386,6 +386,17 @@ function temporadaPanel() {
   <p class="sub" style="font-size:12px;margin:10px 0 0">✓ = probada: con esa palabra se encontraron en Dropkiller productos que vendieron en esta temporada el año pasado (pasa el mouse para ver cuánto). Para usarla: <span class="kbd">/radar-temporada ${esc(t.nombre)}</span></p></div>`;
 }
 function prefijoDe(p) { const n = p.datos?.temporada?.nombre; const t = n && RAW_T.find(x => x.nombre === n); return t ? `[Análisis: temporada | ${t.id} | ${t.nombre}]` : "[Análisis: normal]"; }
+let editProp = null;
+const permisoSQL = " (si dice permiso o policy: falta correr una vez en Supabase el SQL de supabase/editar-propuestas.sql)";
+const comentarioLimpio = c => String(c || "").replace(/^\[Análisis:[^\]]*\]\s*/, "");
+function propEditHTML(x) {
+  const m = /^\[Análisis: temporada \| ([^|]*) \|/.exec(x.comentario || ""); const tid = m ? m[1].trim() : "";
+  return `<form class="panel form" id="fpe" data-id="${x.id}" style="margin-bottom:8px"><div><label for="pe-link">Link del producto o video</label><input id="pe-link" value="${esc(x.link || "")}"></div>
+  <div><label for="pe-tipo">¿Cómo lo analizo?</label><select id="pe-tipo"><option value="normal" ${tid ? "" : "selected"}>Análisis normal</option><option value="temporada" ${tid ? "selected" : ""}>Análisis por temporada</option></select></div>
+  <div id="pe-temp-box" ${tid ? "" : "hidden"}><label for="pe-temp">¿De qué temporada?</label><select id="pe-temp">${RAW_T.map(t => `<option value="${esc(t.id)}" ${String(t.id) === tid ? "selected" : ""}>${esc(t.nombre)}</option>`).join("")}</select></div>
+  <div><label for="pe-com">Comentario</label><textarea id="pe-com" rows="2">${esc(comentarioLimpio(x.comentario))}</textarea></div>
+  <div style="display:flex;gap:8px"><button class="btn" type="submit">Guardar cambios</button><button class="btn ghost" type="button" data-edprop="">Cancelar</button></div><div id="pemsg" class="sub" style="margin:0"></div></form>`;
+}
 function tipoAnalisis(com) { const m = /^\[Análisis: (normal|temporada)(?: \| [^|]* \| ([^\]]*))?\]/.exec(com || ""); return !m ? "análisis normal" : m[1] === "normal" ? "análisis normal" : "por temporada: " + m[2]; }
 const vacio = (t) => `<div class="panel"><p class="sub" style="margin:0">${t}</p></div>`;
 
@@ -418,7 +429,7 @@ const V = {
       <p class="sub" style="font-size:12px;margin:6px 0 0">Normal: mira cómo se vende hoy en Colombia, Ecuador y México (escalera, competencia, videos, ganancia). Temporada: mira cuánto vendió en esas fechas el año pasado y si la carga llega a tiempo. Ver Manual → "Cómo se analiza un producto".</p></div>
      <div><label for="f-com">Comentario (opcional)</label><textarea id="f-com" rows="2" placeholder="Lo vi con muchos comentarios de ¿cuánto cuesta?"></textarea></div>
      <button class="btn" type="submit" id="f-btn">Enviar a la cola</button><div id="fmsg" class="sub" style="margin:0"></div></form>
-     <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => `<div class="alert"><span class="pill gris">Cola</span><div><b>${esc(x.link || "Foto")}</b><br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))} · ${esc(tipoAnalisis(x.comentario))}</span></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}</div></div>`;
+     <div class="panel"><h2 style="font-size:19px">En cola</h2>${cola.length ? cola.map(x => editProp === x.id ? propEditHTML(x) : `<div class="alert"><span class="pill gris">Cola</span><div style="flex:1;min-width:0">${x.foto_url ? `<a href="${esc(x.foto_url)}" target="_blank" rel="noopener"><img src="${esc(x.foto_url)}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px;float:right;margin-left:8px"></a>` : ""}${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener" style="word-break:break-all"><b>${esc(x.link)}</b></a> <span class="ex">↗ ver</span>` : "<b>Foto</b>"}<br><span class="sub">Propuesto por ${esc(x.propuesto_por || "—")} el ${fmtCorto(new Date(x.creado))} · ${esc(tipoAnalisis(x.comentario))}</span>${comentarioLimpio(x.comentario) ? `<br><span class="sub" style="font-size:13px">"${esc(comentarioLimpio(x.comentario))}"</span>` : ""}<div style="margin-top:6px;display:flex;gap:6px"><button class="chipbtn" data-edprop="${x.id}">Editar</button><button class="chipbtn" data-quitprop="${x.id}">Quitar de la cola</button></div></div></div>`).join("") : '<p class="sub">No hay nada en cola.</p>'}<div id="pcmsg" class="sub" style="margin:0"></div></div></div>`;
   },
   semaforo() {
     const N = P.filter(p => tipoLista(p) === "normal"), C = P.filter(p => tipoLista(p) === "compacto"), A = P.filter(p => tipoLista(p) === "archivado");
@@ -613,7 +624,9 @@ function render() {
 const msg = (id, t, bad) => { const el = document.getElementById(id); if (el) { el.textContent = t; el.style.color = bad ? "var(--rojo)" : "var(--verde)"; } };
 
 document.getElementById("view").onclick = async e => {
-  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean],[data-permok],[data-permno],[data-vert],[data-edtemp]"); if (!t) return; const d = t.dataset;
+  const t = e.target.closest("[data-f],[data-fl],[data-back],[data-cap],[data-a],[data-m],[data-cm],[data-delt],[data-delc],[data-guardar],[data-recargar],[data-rean],[data-permok],[data-permno],[data-vert],[data-edtemp],[data-edprop],[data-quitprop]"); if (!t) return; const d = t.dataset;
+  if (d.edprop !== undefined) { editProp = d.edprop || null; return render(); }
+  if (d.quitprop) { const r = await db.from("propuestas").update({ estado: "cancelado" }).eq("id", d.quitprop).select(); if (r.error || !r.data || !r.data.length) return msg("pcmsg", "No se pudo quitar" + (r.error ? ": " + r.error.message : "") + permisoSQL, true); msg("pcmsg", "Quitada de la cola."); return setTimeout(cargar, 600); }
   if (d.vert !== undefined) { verTemp = d.vert || null; editTemp = false; render(); if (verTemp) document.getElementById("tpanel")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (d.edtemp !== undefined) { editTemp = d.edtemp === "1"; return render(); }
   if (d.permok) { const p = P.find(x => x.id === d.permok); t.disabled = true; const r = await db.from("propuestas").insert({ link: p.datos?.link_origen || null, foto_url: p.foto_url || null, propuesto_por: "Permiso resuelto", comentario: prefijoDe(p) + " Sí puedo traerlo: " + p.nombre, producto_id: p.id }); if (r.error) { t.disabled = false; return msg("rmsg", "No se pudo: " + r.error.message, true); } msg("rmsg", "Listo: se hace el análisis completo a las 8 pm (o con /analizar-cola)."); return setTimeout(cargar, 900); }
@@ -634,7 +647,7 @@ async function moverEstado(id, estado) {
   if (r.error) return msg("pmsg", "No se pudo mover: " + r.error.message, true);
   p.estado = estado; render(); msg("pmsg", `${p.nombre} → ${EST_TXT[estado]}`);
 }
-document.getElementById("view").addEventListener("change", e => { const m = e.target.dataset.mover; if (m) moverEstado(m, e.target.value); if (e.target.id === "f-tipo") document.getElementById("f-temp-box").hidden = e.target.value !== "temporada"; });
+document.getElementById("view").addEventListener("change", e => { const m = e.target.dataset.mover; if (m) moverEstado(m, e.target.value); if (e.target.id === "f-tipo") document.getElementById("f-temp-box").hidden = e.target.value !== "temporada"; if (e.target.id === "pe-tipo") document.getElementById("pe-temp-box").hidden = e.target.value !== "temporada"; });
 document.getElementById("view").addEventListener("dragstart", e => { const id = e.target.dataset?.pid; if (id) { e.dataTransfer.setData("text/plain", id); e.target.classList.add("drag"); } });
 document.getElementById("view").addEventListener("dragend", e => e.target.classList?.remove("drag"));
 document.getElementById("view").addEventListener("dragover", e => { const c = e.target.closest?.("[data-col]"); if (c && c.dataset.col !== "en_cola") { e.preventDefault(); c.classList.add("over"); } });
@@ -691,6 +704,13 @@ document.getElementById("view").addEventListener("submit", async e => {
     const r = await db.from("config").update({ valor: lista }).eq("clave", "temporadas");
     if (r.error) return msg("tmsg", "No se pudo guardar: " + r.error.message, true);
     const [y, m] = inicio.split("-").map(Number); calMes = new Date(y, m - 1, 1); cargar();
+  }
+  if (id === "fpe") {
+    const pid = e.target.dataset.id; const tt = val("pe-tipo") === "temporada" ? RAW_T.find(t => String(t.id) === val("pe-temp")) : null;
+    const pref = tt ? `[Análisis: temporada | ${tt.id} | ${tt.nombre}]` : "[Análisis: normal]";
+    const r = await db.from("propuestas").update({ link: val("pe-link") || null, comentario: (pref + " " + val("pe-com")).trim() }).eq("id", pid).select();
+    if (r.error || !r.data || !r.data.length) return msg("pemsg", "No se pudo guardar" + (r.error ? ": " + r.error.message : "") + permisoSQL, true);
+    editProp = null; return cargar();
   }
   if (id === "fte") {
     const buscar = leerLista(document.getElementById("te-txt").value);
